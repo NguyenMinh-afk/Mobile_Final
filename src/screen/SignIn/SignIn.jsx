@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { validateSignIn } from "../src/utils/Validation";
-import { checkLogin } from "../src/utils/CheckAccount";
+import { validateSignIn } from "../../utils/Validation";
+import { checkLogin } from "../../utils/CheckAccount";
 
 const SignIn = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -26,11 +26,13 @@ const SignIn = ({ navigation }) => {
     }
   
     alert(`Đăng nhập thành công! Vai trò: ${role}`);
-    navigation.navigate(role === "admin" ? "AdminDashboard" : "Home");
+    
+    // Điều hướng đến LoginNavigator và truyền role
+    navigation.replace("LoginNavigator", { role });
   };
 
   return (
-    <ImageBackground source={require('../assets/background.png')} style={styles.background} imageStyle={{ opacity: 0.7 }}>
+    <ImageBackground source={require('../../assets/background.png')} style={styles.background} imageStyle={{ opacity: 0.7 }}>
       <View style={styles.frame}>
         <View style={styles.container}>
           <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
@@ -87,8 +89,8 @@ const Divider = () => (
 // Component Social Login tái sử dụng
 const SocialLogin = () => (
   <View style={styles.socialSignInContainer}>
-    <SocialButton image={require('../assets/google_logo.png')} text="Sign in with Google" />
-    <SocialButton image={require('../assets/apple_logo.png')} text="Sign in with Apple" />
+    <SocialButton image={require('../../assets/google_logo.png')} text="Sign in with Google" />
+    <SocialButton image={require('../../assets/apple_logo.png')} text="Sign in with Apple" />
   </View>
 );
 

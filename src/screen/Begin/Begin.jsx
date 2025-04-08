@@ -6,7 +6,7 @@ const Begin = () => {
   const navigation = useNavigation(); // Hook điều hướng
 
   return (
-    <ImageBackground source={require('../assets/background.png')} style={styles.background}>
+    <ImageBackground source={require('../../assets/background.png')} style={styles.background}>
       <View style={styles.container}>
         <AuthButton title="Sign Up" onPress={() => navigation.navigate('SignUp')} style={styles.signUpButton} textStyle={styles.signUpText} />
         <AuthButton title="Sign In" onPress={() => navigation.navigate('SignIn')} style={styles.signInButton} textStyle={styles.signInText} />
@@ -33,12 +33,13 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
+    marginTop: 160,
   },
   signUpButton: {
     backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 75,
+    borderRadius: 30,
     marginBottom: 10,
   },
   signUpText: {
@@ -48,9 +49,9 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     backgroundColor: '#FFFFFF',
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 75,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: '#007BFF',
   },

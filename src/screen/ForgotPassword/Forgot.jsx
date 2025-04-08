@@ -1,45 +1,32 @@
+// Forgot.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 
-const Forgot2 = ({ navigation }) => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const Forgot = ({ navigation }) => {
+  const [email, setEmail] = useState('');
 
-  const handlePasswordUpdate = () => {
-    if (password === confirmPassword) {
-      alert('Password updated successfully');
-      // Pop 3 màn hình: Forgot2, Forgot1, Forgot → quay về SignIn ban đầu
-      navigation.pop(1);
-    } else {
-      alert('Passwords do not match');
-    }
+  const handlePasswordReset = () => {
+    alert('Password reset request sent for account: ' + email);
+    navigation.replace('Forgot1'); // Điều hướng sang Forgot1 sau khi hiển thị alert
   };
 
   return (
     <ImageBackground 
-      source={require('../assets/background.png')} 
+      source={require('../../assets/background.png')} 
       style={styles.background} 
       imageStyle={styles.imageStyle}
     >
       <View style={styles.container}>
-        <Text style={styles.promptText}>Update your account password:</Text>
+        <Text style={styles.promptText}>Enter the Email associated with your account:</Text>
         <TextInput
           style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
+          placeholder="Email"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
           placeholderTextColor="#aaa"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          placeholderTextColor="#aaa"
-        />
-        <CustomButton title="Confirm" onPress={handlePasswordUpdate} />
+        <CustomButton title="Continue" onPress={handlePasswordReset} />
       </View>
     </ImageBackground>
   );
@@ -64,7 +51,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: 'rgba(236, 234, 234, 0.8)',
     padding: 20,
     borderRadius: 15,
     alignItems: 'center',
@@ -93,7 +80,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    marginBottom: 10,
   },
   continueButtonText: {
     color: '#fff',
@@ -102,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Forgot2;
+export default Forgot;

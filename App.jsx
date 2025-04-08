@@ -1,7 +1,8 @@
 import React from 'react';
-import AppNavigator from './AppNavigator'; // Import AppNavigator
-AppNavigator
+import AppNavigator from './src/routers/AppNavigator';
 
-export default function App() {
-  return <AppNavigator />; // Use AppNavigator
-}
+const App = () => {
+  return <AppNavigator />;
+};
+
+export default App;

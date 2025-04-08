@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PasswordInput from '../components/PasswordInput'; // Import component mới
-import { validateSignUp } from "../src/utils/Validation";
+import PasswordInput from '../../components/PasswordInput'; // Import component mới
+import { validateSignUp } from "../../utils/Validation";
 
 const SignUp = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -41,7 +41,7 @@ const SignUp = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={require('../assets/background.png')}
+      source={require('../../assets/background.png')}
       style={styles.background}
       imageStyle={{ opacity: 0.7 }}
     >

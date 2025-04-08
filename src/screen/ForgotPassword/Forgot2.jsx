@@ -1,47 +1,45 @@
-// Forgot1.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 
-const Forgot1 = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
+const Forgot2 = ({ navigation }) => {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleConfirmOtp = () => {
-    if (otp.trim() === '') {
-      alert('Please enter the OTP code.');
-      return;
+  const handlePasswordUpdate = () => {
+    if (password === confirmPassword) {
+      alert('Password updated successfully');
+      // Pop 3 màn hình: Forgot2, Forgot1, Forgot → quay về SignIn ban đầu
+      navigation.pop(1);
+    } else {
+      alert('Passwords do not match');
     }
-    alert(`OTP code confirmed: ${otp}`);
-    navigation.replace('Forgot2'); // Chuyển đến Forgot2.tsx sau khi xác nhận OTP
-  };
-
-  const handlePasswordReset = () => {
-    alert(`Password reset request sent for account: ${email}`);
-    navigation.replace('Forgot2'); // Thí dụ: chuyển sang Forgot2 khi bấm "Resend code"
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/background.png')}
-      style={styles.background}
+    <ImageBackground 
+      source={require('../../assets/background.png')} 
+      style={styles.background} 
       imageStyle={styles.imageStyle}
     >
       <View style={styles.container}>
-        <Text style={styles.promptText}>
-          OTP code has been sent to the Email associated with this account:
-        </Text>
+        <Text style={styles.promptText}>Update your account password:</Text>
         <TextInput
           style={styles.input}
-          placeholder="OTP Code"
-          keyboardType="numeric"
-          value={otp}
-          onChangeText={setOtp}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
           placeholderTextColor="#aaa"
         />
-        <CustomButton title="Confirm" onPress={handleConfirmOtp} />
-        <TouchableOpacity onPress={handlePasswordReset}>
-          <Text style={styles.resendText}>Resend code</Text>
-        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholderTextColor="#aaa"
+        />
+        <CustomButton title="Confirm" onPress={handlePasswordUpdate} />
       </View>
     </ImageBackground>
   );
@@ -102,12 +100,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  resendText: {
-    color: '#007BFF',
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 10,
-  },
 });
 
-export default Forgot1;
+export default Forgot2;

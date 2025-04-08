@@ -1,32 +1,47 @@
-// Forgot.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 
-const Forgot = ({ navigation }) => {
+const Forgot1 = ({ navigation }) => {
   const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+
+  const handleConfirmOtp = () => {
+    if (otp.trim() === '') {
+      alert('Please enter the OTP code.');
+      return;
+    }
+    alert(`OTP code confirmed: ${otp}`);
+    navigation.replace('Forgot2'); // Chuyển đến Forgot2.tsx sau khi xác nhận OTP
+  };
 
   const handlePasswordReset = () => {
-    alert('Password reset request sent for account: ' + email);
-    navigation.replace('Forgot1'); // Điều hướng sang Forgot1 sau khi hiển thị alert
+    alert(`Password reset request sent for account: ${email}`);
   };
 
   return (
-    <ImageBackground 
-      source={require('../assets/background.png')} 
-      style={styles.background} 
+    <ImageBackground
+      source={require('../../assets/background.png')}
+      style={styles.background}
       imageStyle={styles.imageStyle}
     >
       <View style={styles.container}>
-        <Text style={styles.promptText}>Enter the Email associated with your account:</Text>
+        <Text style={styles.promptText}>
+          OTP code has been sent to the Email associated with this account:
+        </Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
+          placeholder="OTP Code"
+          keyboardType="numeric"
+          value={otp}
+          onChangeText={setOtp}
           placeholderTextColor="#aaa"
         />
-        <CustomButton title="Continue" onPress={handlePasswordReset} />
+        <View style={styles.actionContainer}>
+          <TouchableOpacity onPress={handlePasswordReset}>
+            <Text style={styles.resendText}>Resend code</Text>
+          </TouchableOpacity>
+          <CustomButton title="Confirm" onPress={handleConfirmOtp} />
+        </View>
       </View>
     </ImageBackground>
   );
@@ -51,7 +66,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   container: {
-    backgroundColor: 'rgba(236, 234, 234, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     padding: 20,
     borderRadius: 15,
     alignItems: 'center',
@@ -70,22 +85,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 15,
-    marginBottom: 20,
+    marginBottom: 10,
     backgroundColor: '#fff',
   },
-  continueButton: {
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
+  },
+  continueButton: {
+    width: '40%',
     height: 50,
     backgroundColor: '#007BFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
+    marginBottom: -25,
   },
   continueButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  resendText: {
+    color: '#007BFF',
+    fontSize: 14,
+    marginBottom: 30, // Adjust this value to move the text up
+  },
 });
 
-export default Forgot;
+export default Forgot1;
