@@ -10,7 +10,7 @@ export default function AccountScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text>Account Screen</Text>
+      <Text>Menu Screen</Text>
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>

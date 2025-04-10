@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 export default function NotificationScreen() {
   return (
     <View style={styles.container}>
-      <Text>Notification Screen</Text>
+      <Text>Saved Screen</Text>
       <StatusBar style="auto" />
     </View>
   );
