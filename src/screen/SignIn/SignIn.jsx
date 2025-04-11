@@ -24,7 +24,7 @@ const SignIn = ({ navigation }) => {
       const response = await checkLogin(username, password);
       if (response.success) {
         Alert.alert("Thành công", `Đăng nhập thành công! Vai trò: ${response.role}`);
-        navigation.replace("Home", { role: response.role });
+        navigation.replace("LoginNavigator", { role: response.role });
       } else {
         Alert.alert("Lỗi", response.message || "Thông tin đăng nhập không chính xác.");
       }

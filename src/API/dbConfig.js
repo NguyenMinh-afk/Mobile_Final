@@ -27,7 +27,8 @@ const connectDB = async () => {
           username NVARCHAR(50) NOT NULL UNIQUE,
           email NVARCHAR(100) NOT NULL UNIQUE,
           password NVARCHAR(MAX) NOT NULL,
-          isVerified BIT DEFAULT 0
+          isVerified BIT DEFAULT 0,
+          role NVARCHAR(20) DEFAULT 'user' NOT NULL
         )
       END
     `;

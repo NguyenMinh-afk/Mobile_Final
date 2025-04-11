@@ -131,8 +131,11 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Mật khẩu không chính xác!" });
     }
 
-    // Trả về thông tin đăng nhập thành công
-    res.status(200).json({ message: "Đăng nhập thành công!", role: user.isVerified ? "user" : "guest" });
+    // Trả về thông tin đăng nhập thành công, bao gồm role
+    res.status(200).json({ 
+      message: "Đăng nhập thành công!", 
+      role: user.role 
+    });
   } catch (error) {
     console.error("Lỗi khi đăng nhập:", error.message);
     res.status(500).json({ error: "Không thể đăng nhập." });
