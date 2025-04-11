@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Text, StyleSheet } from 'react-native';
+import VerifyOTP from "../screen/OTPs/VerifyOTP";
 
 // Import các màn hình
 import LoadingScreen from '../screen/Loading/LoadingScreen';
@@ -37,6 +38,7 @@ const AppNavigator = () => (
         component={LoadingScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
 
       {/* Màn hình khởi đầu */}
       <Stack.Screen
