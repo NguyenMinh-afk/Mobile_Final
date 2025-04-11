@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Alert } from 'react-native'; // Đã thêm Image
 import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../../contexts/AuthContext'; 
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { validateSignIn } from "../../utils/Validation";
 import { checkLogin } from "../../utils/CheckAccount";
 
@@ -11,23 +12,44 @@ const SignIn = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = () => {
+  const { setIsLoggedIn } = useContext(AuthContext); // Sử dụng context
+
+  const handleSignIn = async () => {
+    if (!username || !password) {
+      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.', [{ text: 'OK' }]);
+      return;
+    }
+
+    // Kiểm tra tính hợp lệ của mật khẩu
     const error = validateSignIn(password);
     if (error) {
-      alert(error);
+      Alert.alert('Lỗi', error, [{ text: 'OK' }]);
       return;
     }
-  
+
+    // Kiểm tra thông tin đăng nhập
     const role = checkLogin(username, password);
-  
     if (!role) {
-      alert("Thông tin đăng nhập sai, vui lòng nhập lại!");
+      Alert.alert('Lỗi', 'Thông tin đăng nhập sai, vui lòng nhập lại!', [{ text: 'OK' }]);
       return;
     }
-  
-    alert(`Đăng nhập thành công! Vai trò: ${role}`);
-    
-    // Điều hướng đến LoginNavigator và truyền role
+
+    // Nếu "Remember Me" được chọn, lưu thông tin vào AsyncStorage
+    if (rememberMe) {
+      try {
+        await AsyncStorage.setItem('user', JSON.stringify({ username, role }));
+      } catch (error) {
+        console.error('Lỗi khi lưu thông tin:', error);
+      }
+    }
+
+    // Cập nhật trạng thái đăng nhập
+    setIsLoggedIn(true);
+
+    // Hiển thị thông báo đăng nhập thành công
+    Alert.alert('Thành công', `Đăng nhập thành công! Vai trò: ${role}`, [{ text: 'OK' }]);
+
+    // Điều hướng đến màn hình chính
     navigation.replace("LoginNavigator", { role });
   };
 
@@ -35,9 +57,20 @@ const SignIn = ({ navigation }) => {
     <ImageBackground source={require('../../assets/background.png')} style={styles.background} imageStyle={{ opacity: 0.7 }}>
       <View style={styles.frame}>
         <View style={styles.container}>
-          <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+          />
           <View style={styles.passwordContainer}>
-            <TextInput style={styles.passwordInput} placeholder="Password" secureTextEntry={!showPassword} value={password} onChangeText={setPassword} />
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Password"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
             <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
               <FontAwesome name={showPassword ? 'eye' : 'eye-slash'} size={24} color="black" />
             </TouchableOpacity>

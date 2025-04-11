@@ -4,10 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Import các màn hình
 import HomeScreen from '../../screen/User/HomeScreen';
-import AccountScreen from '../../screen/User/AccountScreen';
 import HistoryScreen from '../../screen/User/HistoryScreen';
 import CreateScreen from '../../screen/User/CreateScreen';
-import NotificationScreen from '../../screen/User/NotificationScreen';
+import SavedScreen from '../../screen/User/SavedScreen';
+import MenuScreen from '../../screen/User/MenuScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,17 +17,17 @@ const UserNavigator = () => (
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
 
-        // Cài đặt biểu tượng dựa trên tên màn hình
+        // Set icons based on screen names
         if (route.name === 'Home') {
           iconName = focused ? 'home' : 'home-outline';
         } else if (route.name === 'History') {
           iconName = focused ? 'time' : 'time-outline';
         } else if (route.name === 'Create') {
           iconName = focused ? 'add-circle' : 'add-circle-outline';
-        } else if (route.name === 'Notifications') {
-          iconName = focused ? 'notifications' : 'notifications-outline';
-        } else if (route.name === 'Account') {
-          iconName = focused ? 'person' : 'person-outline';
+        } else if (route.name === 'Saved') {
+          iconName = focused ? 'bookmark' : 'bookmark-outline';
+        } else if (route.name === 'Menu') {
+          iconName = focused ? 'menu' : 'menu-outline';
         }
 
         return <Ionicons name={iconName} size={size} color={color} />;
@@ -38,20 +38,20 @@ const UserNavigator = () => (
       inactiveTintColor: 'gray',
     }}
   >
-    {/* Màn hình Home */}
+    {/* Home screen */}
     <Tab.Screen name="Home" component={HomeScreen} />
 
-    {/* Màn hình History */}
+    {/* History screen */}
     <Tab.Screen name="History" component={HistoryScreen} />
 
-    {/* Màn hình Create */}
+    {/* Create screen */}
     <Tab.Screen name="Create" component={CreateScreen} />
 
-    {/* Màn hình Notifications */}
-    <Tab.Screen name="Notifications" component={NotificationScreen} />
+    {/* Saved screen */}
+    <Tab.Screen name="Saved" component={SavedScreen} />
 
-    {/* Màn hình Account */}
-    <Tab.Screen name="Account" component={AccountScreen} />
+    {/* Menu screen */}
+    <Tab.Screen name="Menu" component={MenuScreen} />
   </Tab.Navigator>
 );
 
