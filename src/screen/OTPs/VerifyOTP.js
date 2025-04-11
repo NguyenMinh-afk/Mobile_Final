@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { verifyOTP, signup } from "../../utils/CheckAccount";
+import { verifyOTP, signupComplete } from "../../utils/CheckAccount";
 
 const VerifyOTP = ({ route, navigation }) => {
   const { username, email, password } = route.params; // Nhận dữ liệu từ màn hình trước
@@ -11,7 +11,7 @@ const VerifyOTP = ({ route, navigation }) => {
       const response = await verifyOTP(email, otp);
       if (response.success) {
         // Nếu OTP đúng, tạo tài khoản
-        await signup(username, email, password);
+        await signupComplete(username, email, password);
         alert("Account verified and created successfully!");
 
         navigation.replace("SignIn");

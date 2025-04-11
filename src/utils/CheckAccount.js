@@ -50,3 +50,20 @@ export const signupComplete = async (username, email, password) => {
     return { success: false, message: error.message };
   }
 };
+
+export const checkLogin = async (username, password) => {
+  try {
+    const response = await fetch(`${BASE_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Không thể đăng nhập");
+
+    return { success: true, role: data.role };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};

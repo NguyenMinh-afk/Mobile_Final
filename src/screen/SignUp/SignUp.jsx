@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
-import { CheckBox } from 'react-native-elements';
+import { FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PasswordInput from '../../components/PasswordInput';
 import { validateSignUp } from "../../utils/Validation";
-import { sendOTP, verifyOTP, signupComplete } from "../../utils/CheckAccount";
+import { sendOTP } from "../../utils/CheckAccount";
 
 const SignUp = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -11,79 +12,114 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const checkFields = () => username && email && password && confirmPassword && agreeTerms;
 
-  const handleSendOtp = async () => {
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSignUp = async () => {
+
     if (!agreeTerms) {
-      Alert.alert("Lỗi", "Bạn phải đồng ý với Điều khoản và Chính sách bảo mật.");
+      Alert.alert("Error", "You must agree to the Privacy Policy and Terms of Service.");
       return;
     }
 
     const error = validateSignUp(username, email, password, confirmPassword);
     if (error) {
-      Alert.alert("Lỗi", error);
+      Alert.alert("Error", error);
       return;
     }
 
     try {
+      // Send OTP to user's email
       const response = await sendOTP(email);
+      
       if (response.success) {
-        Alert.alert("Thành công", "OTP đã được gửi tới email của bạn!");
-        setIsOtpSent(true);
+        Alert.alert("Success", "OTP has been sent to your email!");
+        
+        // Navigate to VerifyOTP screen with necessary data
+        navigation.navigate('VerifyOTP', {
+          username: username,
+          email: email,
+          password: password
+        });
       } else {
-        Alert.alert("Lỗi", response.message || "Không thể gửi OTP.");
+        Alert.alert("Error", response.message || "Could not send OTP.");
       }
     } catch (err) {
-      Alert.alert("Lỗi", err.message || "Đã xảy ra lỗi khi gửi OTP.");
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    try {
-      const response = await verifyOTP(email, otp);
-      if (response.success) {
-        await signupComplete(username, email, password);
-        Alert.alert("Thành công", "Tài khoản đã được tạo!");
-        navigation.replace("SignIn");
-      } else {
-        Alert.alert("Lỗi", response.message || "OTP không hợp lệ.");
-      }
-    } catch (err) {
-      Alert.alert("Lỗi", err.message || "Đã xảy ra lỗi khi xác minh OTP.");
+      Alert.alert("Error", err.message || "An error occurred while sending OTP.");
     }
   };
 
   return (
-    <ImageBackground source={require('../../assets/background.png')} style={styles.background} imageStyle={{ opacity: 0.7 }}>
+    <ImageBackground
+      source={require('../../assets/background.png')}
+      style={styles.background}
+      imageStyle={{ opacity: 0.7 }}
+    >
       <View style={styles.frame}>
         <View style={styles.container}>
-          {!isOtpSent ? (
-            <>
-              <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
-              <TextInput style={styles.input} placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
-              <PasswordInput placeholder="Password" value={password} onChangeText={setPassword} />
-              <PasswordInput placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} />
-              <CheckBox
-                title="I agree to the Privacy Policy and Terms of Service."
-                checked={agreeTerms}
-                onPress={() => setAgreeTerms(!agreeTerms)}
-                containerStyle={styles.checkBoxContainer}
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <PasswordInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            showPassword={showPassword}
+            toggleShowPassword={toggleShowPassword}
+          />
+          <PasswordInput
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            showPassword={showPassword}
+            toggleShowPassword={toggleShowPassword}
+          />
+          
+          <View style={styles.agreeTermsContainer}>
+            <TouchableOpacity onPress={() => setAgreeTerms(!agreeTerms)}>
+              <FontAwesome
+                name={agreeTerms ? 'check-square-o' : 'square-o'}
+                size={24}
+                color="black"
               />
-              <TouchableOpacity style={[styles.signUpButton, { backgroundColor: checkFields() ? '#007BFF' : '#ccc' }]} onPress={handleSendOtp} disabled={!checkFields()}>
-                <Text style={styles.signUpButtonText}>Send OTP</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <TextInput style={styles.input} placeholder="Enter OTP" value={otp} onChangeText={setOtp} keyboardType="numeric" />
-              <TouchableOpacity style={[styles.signUpButton, { backgroundColor: otp ? '#007BFF' : '#ccc' }]} onPress={handleVerifyOtp} disabled={!otp}>
-                <Text style={styles.signUpButtonText}>Verify OTP</Text>
-              </TouchableOpacity>
-            </>
-          )}
+            </TouchableOpacity>
+            <Text style={styles.agreeTermsText}>
+              I agree to the <Text style={styles.linkText}>Privacy Policy</Text> and{' '}
+              <Text style={styles.linkText}>Terms of Service</Text>.
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.signUpButton, { backgroundColor: checkFields() ? '#007BFF' : '#ccc' }]}
+            onPress={handleSignUp}
+            disabled={!checkFields()}
+          >
+            <Text style={styles.signUpButtonText}>Sign Up</Text>
+          </TouchableOpacity>
+
+          <View style={styles.logInContainer}>
+            <Text style={styles.normalText}>
+              Already have an account?{' '}
+              <Text style={styles.linkText} onPress={() => navigation.replace('SignIn')}>
+                Sign In
+              </Text>
+            </Text>
+          </View>
         </View>
       </View>
     </ImageBackground>
@@ -91,13 +127,67 @@ const SignUp = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  background: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  frame: { backgroundColor: 'rgba(236, 234, 234, 0.8)', borderRadius: 20, padding: 20, width: '90%', alignSelf: 'center' },
-  container: { width: '100%', alignItems: 'center' },
-  input: { width: '100%', height: 50, borderColor: '#ccc', borderWidth: 1, borderRadius: 5, paddingHorizontal: 10, marginBottom: 10, backgroundColor: 'rgba(255, 255, 255, 0.8)' },
-  checkBoxContainer: { backgroundColor: 'transparent', borderWidth: 0 },
-  signUpButton: { width: '100%', height: 50, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginBottom: 20 },
-  signUpButtonText: { color: '#fff', fontSize: 18 },
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  frame: {
+    backgroundColor: 'rgba(236, 234, 234, 0.8)',
+    borderRadius: 20,
+    padding: 20,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  container: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  agreeTermsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  agreeTermsText: {
+    marginLeft: 10,
+    fontSize: 12,
+    color: '#000',
+  },
+  linkText: {
+    color: '#007BFF',
+    fontWeight: 'bold',
+  },
+  signUpButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#007BFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  signUpButtonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  logInContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  normalText: {
+    color: '#000',
+  },
 });
 
 export default SignUp;
