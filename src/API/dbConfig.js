@@ -1,14 +1,15 @@
+require("dotenv").config(); // Đọc file .env
 const sql = require("mssql");
 
 const config = {
-  user: "sa", // Tên đăng nhập của MSSQL
-  password: "123456", // Mật khẩu của MSSQL
-  server: "DESKTOP-FKLCNTQ/MLANHEM", // Địa chỉ IP cục bộ hoặc tên server
-  database: "Mobile", // Tên database
+  user: process.env.DB_USER, // Lấy giá trị từ .env
+  password: process.env.DB_PASSWORD, // Lấy giá trị từ .env
+  server: process.env.DB_SERVER, // Lấy giá trị từ .env
+  database: process.env.DB_DATABASE, // Lấy giá trị từ .env
   options: {
-    encrypt: true, // Để true nếu dùng Azure
-    enableArithAbort: true,
-    trustServerCertificate: true, // Bỏ qua xác thực chứng chỉ
+    encrypt: process.env.DB_ENCRYPT === "true", // Chuyển đổi giá trị string từ .env sang boolean
+    enableArithAbort: process.env.DB_ARITHABORT === "true", // Chuyển đổi giá trị string từ .env sang boolean
+    trustServerCertificate: process.env.DB_TRUSTCERTIFICATE === "true", // Bỏ qua chứng chỉ tự ký
   },
 };
 
