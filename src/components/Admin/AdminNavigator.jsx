@@ -15,8 +15,8 @@ const AdminNavigator = () => (
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
-        if (route.name === 'Home') {
-          iconName = focused ? 'home' : 'home-outline';
+        if (route.name === 'Dashboard') {
+          iconName = focused ? 'grid' : 'grid-outline';
         } else if (route.name === 'Accounts Management') {
           iconName = focused ? 'list' : 'list-outline';
         } else if (route.name === 'Lessons Management') {
@@ -34,11 +34,11 @@ const AdminNavigator = () => (
       inactiveTintColor: 'gray',
     }}
   >
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Accounts Management" component={AccountsManagementScreen} />
-    <Tab.Screen name="Lessons Management" component={LessonsManagementScreen} />
-    <Tab.Screen name="Revenue" component={RevenueScreen} />
-    <Tab.Screen name="Account" component={AccountScreen} />
+    <Tab.Screen name="Dashboard" component={HomeScreen} options={{ headerShown: false }}/>
+    <Tab.Screen name="Accounts Management" component={AccountsManagementScreen} options={{ headerShown: false }}/>
+    <Tab.Screen name="Lessons Management" component={LessonsManagementScreen} options={{ headerShown: false }}/>
+    <Tab.Screen name="Revenue" component={RevenueScreen} options={{ headerShown: false }}/>
+    <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }}/>
   </Tab.Navigator>
 );
 
