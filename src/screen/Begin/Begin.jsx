@@ -41,7 +41,7 @@ const Begin = () => {
         )}
       />
 
-      {/* Chấm phân trang - Đặt ngoài ảnh */}
+      {/* Chấm phân trang */}
       <View style={styles.pagination}>
         {screens.map((_, i) => (
           <View key={i} style={[styles.dot, index === i ? styles.activeDot : null]} />
