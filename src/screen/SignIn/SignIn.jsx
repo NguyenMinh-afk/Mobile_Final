@@ -16,41 +16,21 @@ const SignIn = ({ navigation }) => {
 
   const handleSignIn = async () => {
     if (!username || !password) {
-      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.', [{ text: 'OK' }]);
+      Alert.alert("Lỗi", "Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
-    // Kiểm tra tính hợp lệ của mật khẩu
-    const error = validateSignIn(password);
-    if (error) {
-      Alert.alert('Lỗi', error, [{ text: 'OK' }]);
-      return;
-    }
-
-    // Kiểm tra thông tin đăng nhập
-    const role = checkLogin(username, password);
-    if (!role) {
-      Alert.alert('Lỗi', 'Thông tin đăng nhập sai, vui lòng nhập lại!', [{ text: 'OK' }]);
-      return;
-    }
-
-    // Nếu "Remember Me" được chọn, lưu thông tin vào AsyncStorage
-    if (rememberMe) {
-      try {
-        await AsyncStorage.setItem('user', JSON.stringify({ username, role }));
-      } catch (error) {
-        console.error('Lỗi khi lưu thông tin:', error);
+    try {
+      const response = await checkLogin(username, password);
+      if (response.success) {
+        Alert.alert("Thành công", `Đăng nhập thành công! Vai trò: ${response.role}`);
+        navigation.replace("LoginNavigator", { role: response.role });
+      } else {
+        Alert.alert("Lỗi", response.message || "Thông tin đăng nhập không chính xác.");
       }
+    } catch (err) {
+      Alert.alert("Lỗi", err.message || "Đã xảy ra lỗi khi đăng nhập.");
     }
-
-    // Cập nhật trạng thái đăng nhập
-    setIsLoggedIn(true);
-
-    // Hiển thị thông báo đăng nhập thành công
-    Alert.alert('Thành công', `Đăng nhập thành công! Vai trò: ${role}`, [{ text: 'OK' }]);
-
-    // Điều hướng đến màn hình chính
-    navigation.replace("LoginNavigator", { role });
   };
 
   return (
