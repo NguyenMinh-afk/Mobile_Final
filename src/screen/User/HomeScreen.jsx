@@ -6,16 +6,20 @@ import Banner1 from '../../assets/User/home_banner0.png';
 import Banner2 from '../../assets/User/home_banner2.png';
 import Banner3 from '../../assets/User/home_banner3.png';
 import { Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Image source={Avatar} style={styles.avatar} />
           <TextInput placeholder="Search" style={styles.searchInput} />
-          <Ionicons name="notifications-outline" size={24} color="black" />
+          <TouchableOpacity onPress={() => navigation.navigate('Notification')}> {/* 👈 Navigate on press */}
+            <Ionicons name="notifications-outline" size={24} color="black" />
+          </TouchableOpacity>
         </View>
 
         <ScrollView

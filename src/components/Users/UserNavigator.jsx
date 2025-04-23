@@ -1,23 +1,48 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { createStackNavigator } from '@react-navigation/stack';
 
-// Import các màn hình
+// Import main screens
 import HomeScreen from '../../screen/User/HomeScreen';
 import HistoryScreen from '../../screen/User/HistoryScreen';
 import CreateScreen from '../../screen/User/CreateScreen';
 import SavedScreen from '../../screen/User/SavedScreen';
 import MenuScreen from '../../screen/User/MenuScreen';
+import Notificationscreen from '../../screen/User/NotificationScreen';
+
+// Import menu sub-screens
+import PersonalInfoScreen from '../../screen/User/PersonalinfoScreen';
+import LanguageScreen from '../../screen/User/LanguageScreen';
+import ChangePasswordScreen from '../../screen/User/ChangePasswordScreen';
+import SettingsScreen from '../../screen/User/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const HomeStackNavigator = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HomeMain" component={HomeScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="Notification" component={Notificationscreen} options={{ title: 'Thông báo' }} />
+  </Stack.Navigator>
+);
+
+// 👇 Menu Stack Navigator
+const MenuStackNavigator = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="MenuMain" component={MenuScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} options={{ title: 'Thông tin cá nhân' }} />
+    <Stack.Screen name="Language" component={LanguageScreen} options={{ title: 'Ngôn ngữ' }} />
+    <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Đổi mật khẩu' }} />
+    <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Cài đặt' }} />
+  </Stack.Navigator>
+);
 
 const UserNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
-
-        // Set icons based on screen names
         if (route.name === 'Home') {
           iconName = focused ? 'home' : 'home-outline';
         } else if (route.name === 'History') {
@@ -29,7 +54,6 @@ const UserNavigator = () => (
         } else if (route.name === 'Menu') {
           iconName = focused ? 'menu' : 'menu-outline';
         }
-
         return <Ionicons name={iconName} size={size} color={color} />;
       },
     })}
@@ -38,20 +62,11 @@ const UserNavigator = () => (
       inactiveTintColor: 'gray',
     }}
   >
-    {/* Home screen */}
-    <Tab.Screen name="Home" component={HomeScreen} options={{headerShown:false}}/>
-
-    {/* History screen */}
+    <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }} />
     <Tab.Screen name="History" component={HistoryScreen} />
-
-    {/* Create screen */}
     <Tab.Screen name="Create" component={CreateScreen} />
-
-    {/* Saved screen */}
     <Tab.Screen name="Saved" component={SavedScreen} />
-
-    {/* Menu screen */}
-    <Tab.Screen name="Menu" component={MenuScreen} />
+    <Tab.Screen name="Menu" component={MenuStackNavigator} options={{ headerShown: false }} />
   </Tab.Navigator>
 );
 

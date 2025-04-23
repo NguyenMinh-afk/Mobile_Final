@@ -34,10 +34,10 @@ export default function MenuScreen() {
 
         {/* Menu Items */}
         <View style={styles.menuContainer}>
-          <MenuItem icon="person-outline" label="Thông tin cá nhân" />
-          <MenuItem icon="key-outline" label="Đổi mật khẩu" />
-          <MenuItem icon="language" label="Ngôn ngữ" />
-          <MenuItem icon="shield-checkmark-outline" label="Bảo mật" />
+          <MenuItem icon="person-outline" label="Thông tin cá nhân" onPress={() => navigation.navigate('PersonalInfo')} />
+          <MenuItem icon="key-outline" label="Đổi mật khẩu" onPress={() => navigation.navigate('ChangePassword')} />
+          <MenuItem icon="language" label="Ngôn ngữ" onPress={() => navigation.navigate('Language')} />
+          <MenuItem icon="settings-outline" label="Cài đặt" onPress={() => navigation.navigate('Settings')} />
           <MenuItem icon="chatbubble-ellipses-outline" label="Hỗ trợ từ kỹ thuật viên" />
           <MenuItem icon="log-out-outline" label="Đăng xuất" onPress={handleSignOut} />
         </View>
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 10,
   },
   avatar: {
     width: 60,
