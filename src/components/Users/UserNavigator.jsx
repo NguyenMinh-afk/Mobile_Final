@@ -39,7 +39,7 @@ const UserNavigator = () => (
     }}
   >
     {/* Home screen */}
-    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Home" component={HomeScreen} options={{headerShown:false}}/>
 
     {/* History screen */}
     <Tab.Screen name="History" component={HistoryScreen} />
