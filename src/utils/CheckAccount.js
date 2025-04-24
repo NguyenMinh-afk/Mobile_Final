@@ -1,18 +1,21 @@
-const BASE_URL = "http://192.168.1.10:5000/api"; // Địa chỉ IP backend của bạn
+
+const BASE_URL = `http://${process.env.IPV4}:5000/api` // Địa chỉ IP backend của bạn
 
 export const sendOTP = async (email) => {
   try {
+    console.log("Sending OTP to:", email); // Thêm log
     const response = await fetch(`${BASE_URL}/send-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-
+    console.log("Response status:", response.status); // Thêm log
     const data = await response.json();
+    console.log("Response from backend:", data); // Thêm log
     if (!response.ok) throw new Error(data.error || "Không thể gửi OTP");
-
     return { success: true, message: data.message };
   } catch (error) {
+    console.error("Error in sendOTP:", error.message); // Thêm log
     return { success: false, message: error.message };
   }
 };

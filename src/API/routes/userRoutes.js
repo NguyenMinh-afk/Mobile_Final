@@ -24,6 +24,7 @@ const transporter = nodemailer.createTransport({
 
 // API Gửi OTP
 router.post("/send-otp", async (req, res) => {
+  console.log("Received request to send OTP:", req.body); // Log thông tin nhận được
   const { email } = req.body;
 
   try {

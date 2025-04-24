@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import PasswordInput from '../../components/PasswordInput';
 import { validateSignUp } from "../../utils/Validation";
 import { sendOTP } from "../../utils/CheckAccount";
@@ -21,7 +20,6 @@ const SignUp = ({ navigation }) => {
   };
 
   const handleSignUp = async () => {
-
     if (!agreeTerms) {
       Alert.alert("Error", "You must agree to the Privacy Policy and Terms of Service.");
       return;
@@ -34,22 +32,22 @@ const SignUp = ({ navigation }) => {
     }
 
     try {
-      // Send OTP to user's email
+      // Gửi OTP tới email của người dùng
       const response = await sendOTP(email);
-      
+
       if (response.success) {
         Alert.alert("Success", "OTP has been sent to your email!");
-        
-        // Navigate to VerifyOTP screen with necessary data
+        console.log("Navigating to VerifyOTP with:", { username, email, password }); // Thêm log
         navigation.navigate('VerifyOTP', {
           username: username,
           email: email,
-          password: password
+          password: password,
         });
       } else {
         Alert.alert("Error", response.message || "Could not send OTP.");
       }
     } catch (err) {
+      console.error("Error in handleSignUp:", err); // Log lỗi
       Alert.alert("Error", err.message || "An error occurred while sending OTP.");
     }
   };
