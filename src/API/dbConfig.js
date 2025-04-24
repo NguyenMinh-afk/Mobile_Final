@@ -16,7 +16,7 @@ const config = {
 const connectDB = async () => {
   try {
     const pool = await sql.connect(config); // Kết nối MSSQL
-    console.log("Đã kết nối tới MSSQL Database!");
+    console.log("Đã kết nối tới MSSQL SERVER:",process.env.DB_SERVER," Database:", process.env.DB_DATABASE);
 
     // Kiểm tra và tạo bảng Users
     const createUsersTable = `

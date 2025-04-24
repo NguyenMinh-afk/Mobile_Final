@@ -17,5 +17,5 @@ app.use("/api", userRoutes);
 // Lắng nghe trên cổng 5000 và chấp nhận yêu cầu từ IP công khai
 const PORT = 5000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server đang chạy tại http://${IPV4}:${PORT}`);
+  console.log(`Server đang chạy tại http://${process.env.IPV4}:${PORT}`);
 });
