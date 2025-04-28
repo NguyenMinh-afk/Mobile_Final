@@ -16,6 +16,7 @@ import PersonalInfoScreen from '../../screen/User/PersonalinfoScreen';
 import LanguageScreen from '../../screen/User/LanguageScreen';
 import ChangePasswordScreen from '../../screen/User/ChangePasswordScreen';
 import SettingsScreen from '../../screen/User/SettingsScreen';
+import SubscriptionScreen from '../../screen/User/SubscriptionScreen'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -35,6 +36,7 @@ const MenuStackNavigator = () => (
     <Stack.Screen name="Language" component={LanguageScreen} options={{ title: 'Ngôn ngữ' }} />
     <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Đổi mật khẩu' }} />
     <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Cài đặt' }} />
+    <Stack.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

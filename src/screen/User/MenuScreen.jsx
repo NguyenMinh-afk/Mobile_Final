@@ -23,7 +23,7 @@ export default function MenuScreen() {
           <View style={styles.profileInfo}>
             <Text style={styles.name}>Nguyễn Đức Minh</Text>
             <Text style={styles.username}>@minhnguyen</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
               <Text style={styles.upgrade}>🎁 Nâng cấp tài khoản</Text>
             </TouchableOpacity>
           </View>
