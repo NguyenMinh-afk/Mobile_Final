@@ -1,13 +1,32 @@
 // Forgot.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { sendOTP } from '../../utils/CheckAccount';
 
 const Forgot = ({ navigation }) => {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handlePasswordReset = () => {
-    alert('Password reset request sent for account: ' + email);
-    navigation.replace('Forgot1'); // Điều hướng sang Forgot1 sau khi hiển thị alert
+  const handlePasswordReset = async () => {
+    if (!email) {
+      alert('Vui lòng nhập email!');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await sendOTP(email);
+      if (result.success) {
+        alert(result.message);
+        navigation.navigate('Forgot1', { email });
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Có lỗi xảy ra');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -26,15 +45,19 @@ const Forgot = ({ navigation }) => {
           onChangeText={setEmail}
           placeholderTextColor="#aaa"
         />
-        <CustomButton title="Continue" onPress={handlePasswordReset} />
+        <CustomButton 
+          title={loading ? "Đang gửi..." : "Continue"} 
+          onPress={handlePasswordReset}
+          disabled={loading}
+        />
       </View>
     </ImageBackground>
   );
 };
 
 // Component nút bấm tái sử dụng
-const CustomButton = ({ title, onPress }) => (
-  <TouchableOpacity style={styles.continueButton} onPress={onPress}>
+const CustomButton = ({ title, onPress, disabled }) => (
+  <TouchableOpacity style={styles.continueButton} onPress={onPress} disabled={disabled}>
     <Text style={styles.continueButtonText}>{title}</Text>
   </TouchableOpacity>
 );

@@ -26,10 +26,10 @@ const SignIn = ({ navigation }) => {
         Alert.alert("Thành công", `Đăng nhập thành công! Vai trò: ${response.role}`);
         navigation.replace("LoginNavigator", { role: response.role });
       } else {
-        Alert.alert("Lỗi", response.message || "Thông tin đăng nhập không chính xác.");
+        Alert.alert("Lỗi", response.message + `(check response ${response.success})` || "Thông tin đăng nhập không chính xác.");
       }
     } catch (err) {
-      Alert.alert("Lỗi", err.message || "Đã xảy ra lỗi khi đăng nhập.");
+      Alert.alert("Lỗi", err.message +"(catch)" || "Đã xảy ra lỗi khi đăng nhập.");
     }
   };
 

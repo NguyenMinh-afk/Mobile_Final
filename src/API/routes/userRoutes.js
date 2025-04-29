@@ -143,4 +143,32 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// API Reset mật khẩu
+router.post("/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const request = new sql.Request();
+
+    // Kiểm tra email tồn tại
+    const checkEmail = await request.query(`SELECT * FROM Users WHERE email = '${email}'`);
+    if (checkEmail.recordset.length === 0) {
+      return res.status(400).json({ error: "Email không tồn tại!" });
+    }
+
+    // Cập nhật mật khẩu mới
+    await request.query(`
+      UPDATE Users 
+      SET password = '${hashedPassword}'
+      WHERE email = '${email}'
+    `);
+
+    res.status(200).json({ message: "Mật khẩu đã được cập nhật!" });
+  } catch (error) {
+    console.error("Lỗi khi reset mật khẩu:", error.message);
+    res.status(500).json({ error: "Không thể reset mật khẩu." });
+  }
+});
+
 module.exports = router;
