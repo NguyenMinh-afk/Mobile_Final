@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -51,7 +51,6 @@ export default function AccountsManagementScreen() {
   // Render từng tài khoản
   const renderAccount = ({ item }) => (
     <View style={[styles.accountCard, item.status === 'banned' && styles.bannedAccount]}>
-      {/* Thông tin tài khoản */}
       <View style={styles.accountInfo}>
         <Image source={item.avatar} style={styles.avatar} />
         <View>
@@ -61,16 +60,68 @@ export default function AccountsManagementScreen() {
         </View>
       </View>
 
-      {/* Nút menu bên phải */}
       <TouchableOpacity
         style={styles.menuButton}
         onPress={(event) => {
-          const { pageX, pageY } = event.nativeEvent; // Lấy vị trí nút
-          showMenu(item.id, pageX - 120, pageY); // Đẩy menu lệch về bên trái (giảm giá trị `pageX`)
+          const { pageY } = event.nativeEvent;
+          setMenuPosition({ x: 20, y: pageY });
+          setMenuVisible(menuVisible === item.id ? null : item.id);
         }}
       >
-        <MaterialIcons name="menu" size={24} color="black" />
+        <MaterialIcons name="more-vert" size={24} color="black" />
       </TouchableOpacity>
+
+      <Modal
+        transparent={true}
+        visible={menuVisible === item.id}
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(null)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setMenuVisible(null)}
+        >
+          <View 
+            style={[
+              styles.dropdownMenu,
+              {
+                position: 'absolute',
+                top: menuPosition.y,
+                right: 20,
+              }
+            ]}
+          >
+            <TouchableOpacity 
+              style={styles.menuItem} 
+              onPress={() => {
+                console.log('View', item.id);
+                setMenuVisible(null);
+              }}
+            >
+              <MaterialIcons name="visibility" size={20} color="#333" />
+              <Text style={styles.menuItemText}>View</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => handleBan(item.id)}
+            >
+              <MaterialIcons 
+                name={item.status === 'banned' ? "lock-open" : "lock"} 
+                size={20} 
+                color={item.status === 'banned' ? "#4CAF50" : "#FF5252"} 
+              />
+              <Text style={[
+                styles.menuItemText, 
+                item.status === 'banned' ? styles.unbanText : styles.banText
+              ]}>
+                {item.status === 'banned' ? 'Unban' : 'Ban'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 
@@ -113,29 +164,6 @@ export default function AccountsManagementScreen() {
         renderItem={renderAccount}
         contentContainerStyle={styles.listContainer}
       />
-
-      {/* Menu hành động */}
-      {menuVisible && (
-        <View
-          style={[
-            styles.menu,
-            {
-              top: menuPosition.y,
-              left: menuPosition.x,
-            },
-          ]}
-        >
-          <TouchableOpacity style={styles.menuItem} onPress={() => console.log('View')}>
-            <Text style={styles.menuItemText}>View</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.menuItem, styles.banButton]} onPress={() => handleBan(menuVisible)}>
-            <Text style={styles.menuItemText}>Ban</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={hideMenu}>
-            <Text style={styles.menuItemText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      )}
 
       <StatusBar style="auto" />
     </SafeAreaView>
@@ -245,15 +273,40 @@ const styles = StyleSheet.create({
     width: 140, // Đặt chiều rộng cố định để tránh tràn ra ngoài màn hình
   },
   menuItem: {
-    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   menuItemText: {
     fontSize: 14,
+    marginLeft: 8,
     color: '#333',
   },
   banButton: {
     backgroundColor: '#FFCDD2',
     marginTop: 5,
     borderRadius: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  dropdownMenu: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    minWidth: 150,
+  },
+  unbanText: {
+    color: '#4CAF50',
+  },
+  banText: {
+    color: '#FF5252',
   },
 });

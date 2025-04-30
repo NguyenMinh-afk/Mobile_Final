@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -70,35 +70,70 @@ export default function LessonsManagementScreen() {
       <TouchableOpacity
         style={styles.menuButton}
         onPress={(event) => {
-          const { pageX, pageY } = event.nativeEvent;
+          const { pageY, pageX } = event.nativeEvent;
+          setMenuPosition({ x: 20, y: pageY }); // Adjust these values as needed
           setMenuVisible(menuVisible === item.id ? null : item.id);
-          setMenuPosition({ x: pageX - 150, y: pageY });
         }}
       >
         <MaterialIcons name="more-vert" size={24} color="black" />
       </TouchableOpacity>
 
-      {menuVisible === item.id && (
-        <View style={[styles.menu, { top: menuPosition.y - 100, left: menuPosition.x }]}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => console.log('View', item.id)}>
-            <Text style={styles.menuItemText}>View</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.menuItem, styles.toggleButton]} 
-            onPress={() => handleToggleVisibility(item.id)}
+      <Modal
+        transparent={true}
+        visible={menuVisible === item.id}
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(null)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1} 
+          onPress={() => setMenuVisible(null)}
+        >
+          <View 
+            style={[
+              styles.dropdownMenu,
+              {
+                position: 'absolute',
+                top: menuPosition.y,
+                right: menuPosition.x,
+              }
+            ]}
           >
-            <Text style={styles.menuItemText}>
-              {item.isVisible ? 'Hide' : 'Show'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.menuItem, styles.deleteButton]}
-            onPress={() => handleDelete(item.id)}
-          >
-            <Text style={styles.menuItemText}>Delete</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            <TouchableOpacity 
+              style={styles.menuItem} 
+              onPress={() => {
+                console.log('View', item.id);
+                setMenuVisible(null);
+              }}
+            >
+              <MaterialIcons name="visibility" size={20} color="#333" />
+              <Text style={styles.menuItemText}>View</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => handleToggleVisibility(item.id)}
+            >
+              <MaterialIcons 
+                name={item.isVisible ? "visibility-off" : "visibility"} 
+                size={20} 
+                color="#333" 
+              />
+              <Text style={styles.menuItemText}>
+                {item.isVisible ? 'Hide' : 'Show'}
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => handleDelete(item.id)}
+            >
+              <MaterialIcons name="delete" size={20} color="#FF5252" />
+              <Text style={[styles.menuItemText, styles.deleteText]}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 
@@ -221,29 +256,39 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 2,
   },
-  menuButton: {
-    padding: 5,
+  menuContainer: {
+    position: 'relative',
+    zIndex: 1,
   },
-  menu: {
-    position: 'absolute',
+  menuButton: {
+    padding: 8,
+    borderRadius: 20,
+  },
+  dropdownMenu: {
     backgroundColor: '#fff',
-    borderRadius: 5,
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
     elevation: 5,
-    zIndex: 10,
-    padding: 10,
-    width: 140,
+    minWidth: 150,
+    position: 'absolute',
   },
   menuItem: {
-    padding: 10,
-    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   menuItemText: {
     fontSize: 14,
+    marginLeft: 8,
     color: '#333',
+  },
+  deleteText: {
+    color: '#FF5252',
   },
   toggleButton: {
     backgroundColor: '#E3F2FD',
@@ -252,5 +297,11 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: '#FFEBEE',
     marginTop: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
