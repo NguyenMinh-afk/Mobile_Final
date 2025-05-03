@@ -5,8 +5,10 @@ import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const dashboardData = {
     totalUsers: 1500,
     newUsersThisMonth: 120,
@@ -34,8 +36,11 @@ export default function HomeScreen() {
   const renderHeader = () => (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>English Learning Dashboard</Text>
-        <TouchableOpacity style={styles.profileButton}>
+        <Text style={styles.title}>MQT</Text>
+        <TouchableOpacity 
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('Account')}
+        >
           <MaterialCommunityIcons name="account-circle" size={28} color="#4A6572" />
         </TouchableOpacity>
       </View>
