@@ -25,7 +25,8 @@ import WritingDetail from '../../screen/User/Home_Detail/WritingDetail';
 import ReadingDetail from '../../screen/User/Home_Detail/ReadingDetail';
 import QuizzersDetail from '../../screen/User/Home_Detail/QuizzersDetail';
 import ComingSoon from '../../screen/User/Home_Detail/ComingSoon';
-
+import DailyQuizDetail from '../../screen/User/Home_Detail/DailyQuizDetail';
+import GrammarChallengeDetail from '../../screen/User/Home_Detail/GrammarChallengeDetail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -42,6 +43,8 @@ const HomeStackNavigator = () => (
     <Stack.Screen name="ReadingDetail" component={ReadingDetail} options={{ title: 'Chi tiết từ vựng', headerShown: false }} />
     <Stack.Screen name="QuizzersDetail" component={QuizzersDetail} options={{ title: 'Chi tiết từ vựng', headerShown: false }} />
     <Stack.Screen name="ComingSoon" component={ComingSoon} options={{ title: 'Chi tiết từ vựng', headerShown: false }} />
+    <Stack.Screen name="DailyQuizDetail" component={DailyQuizDetail} options={{ title: 'Chi tiết từ vựng', headerShown: false }} />
+    <Stack.Screen name="GrammarChallengeDetail" component={GrammarChallengeDetail} options={{ title: 'Chi tiết từ vựng', headerShown: false }} />
   </Stack.Navigator>
 );
 
