@@ -106,26 +106,17 @@ const SavedStackNavigator = () => (
 
 // Menu Stack Navigator
 const MenuStackNavigator = () => {
-  const [theme, setTheme] = useState(null); // Initialize theme
+  const [theme, setTheme] = useState('light');// Initialize as null to wait for AsyncStorage
 
+  // Load theme from AsyncStorage when app starts
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); // Default to light if no theme saved
+      setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    // Listen for theme changes in AsyncStorage
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500); // Check every 500ms for updates
-
-    return () => clearInterval(themeListener); // Cleanup listener when unmounting
-  }, [theme]);
+  }, []);
 
   // Prevent UI flicker while loading theme
   if (theme === null) {
@@ -151,7 +142,7 @@ const MenuStackNavigator = () => {
 
 const UserNavigator = () => {
 
-  const [theme, setTheme] = useState(null); // Initialize as null to wait for AsyncStorage
+  const [theme, setTheme] = useState('light');// Initialize as null to wait for AsyncStorage
 
   // Load theme from AsyncStorage when app starts
   useEffect(() => {
