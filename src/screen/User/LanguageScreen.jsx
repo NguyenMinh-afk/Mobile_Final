@@ -2,13 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function LanguageScreen() {
   const currentLanguages = ['Tiếng Việt', 'Tiếng Anh'];
   const moreLanguages = ['Tiếng Nhật', 'Tiếng Pháp', 'Tiếng Ý', 'Tiếng Hàn', 'Tiếng Trung'];
   const [selectedLanguages, setSelectedLanguages] = useState(['Tiếng Việt']); // Khởi tạo với ngôn ngữ mặc định
   const [theme, setTheme] = useState('light'); // Khởi tạo theme mặc định
+  const navigation = useNavigation();
 
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
+  
+    loadTheme();
+  }, []);
+  
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+      headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
+    });
+  }, [theme]);
+  
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');

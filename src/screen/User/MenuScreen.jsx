@@ -7,22 +7,27 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function MenuScreen() {
   const navigation = useNavigation();
-  const [theme, setTheme] = useState('light');// Initialize as null
+  const [theme, setTheme] = useState(null); // Initialize as null
 
   // Load theme from AsyncStorage when screen mounts
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light');
+      setTheme(savedTheme || 'light'); // Ensure correct theme is applied
     };
-  
+
     loadTheme();
-  
-    // Listen for updates when navigating back or theme changes
-    const unsubscribe = navigation.addListener('focus', loadTheme);
-  
-    return () => unsubscribe(); // Cleanup listener
-  }, [navigation]);
+
+    // Listen for theme changes in AsyncStorage
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500); // Check every 500ms for changes
+
+    return () => clearInterval(themeListener); // Cleanup listener
+  }, [theme]);
 
   const handleSignOut = () => {
     navigation.replace('SignIn');

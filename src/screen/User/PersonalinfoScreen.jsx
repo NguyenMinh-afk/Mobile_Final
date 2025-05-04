@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Switch, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function PersonalInfoScreen() {
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -15,20 +18,19 @@ export default function PersonalInfoScreen() {
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); 
+      setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
+  }, []);
+  
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+      headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
+    });
   }, [theme]);
+  
 
   useEffect(() => {
     const loadUserData = async () => {

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ChangePasswordScreen() {
   const [theme, setTheme] = useState('light'); // Default theme
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadTheme = async () => {
@@ -13,13 +15,15 @@ export default function ChangePasswordScreen() {
     };
   
     loadTheme();
+  }, []);
   
-    // Listen for updates when navigating back or theme changes
-    const unsubscribe = navigation.addListener('focus', loadTheme);
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+      headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
+    });
+  }, [theme]);
   
-    return () => unsubscribe(); // Cleanup listener
-  }, [navigation]);
-
   return (
     <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
       <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>

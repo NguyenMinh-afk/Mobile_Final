@@ -104,55 +104,57 @@ const SavedStackNavigator = () => (
   </Stack.Navigator>
 );
 
+
 // Menu Stack Navigator
 const MenuStackNavigator = () => {
-  const [theme, setTheme] = useState('light');// Initialize as null to wait for AsyncStorage
-
-  // Load theme from AsyncStorage when app starts
-  useEffect(() => {
-    const loadTheme = async () => {
-      const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light');
-    };
+    const [theme, setTheme] = useState('light');
   
-    loadTheme();
-  }, []);
+    useEffect(() => {
+      const loadTheme = async () => {
+        const savedTheme = await AsyncStorage.getItem('theme');
+        setTheme(savedTheme || 'light');
+      };
+  
+      loadTheme();
+    }, []);
+  
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name="MenuMain" component={MenuScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} options={{ title: 'Thông tin cá nhân' }} />
+        <Stack.Screen name="Language" component={LanguageScreen} options={{ title: 'Ngôn ngữ' }} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Đổi mật khẩu' }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Cài đặt' }} />
+        <Stack.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
+      </Stack.Navigator>
+    );
+  };
 
-  // Prevent UI flicker while loading theme
-  if (theme === null) {
-    return null;
-  }
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
-        headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
-      }}
-    >
-    <Stack.Screen name="MenuMain" component={MenuScreen} options={{ headerShown: false }} />
-    <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} options={{ title: 'Thông tin cá nhân' }} />
-    <Stack.Screen name="Language" component={LanguageScreen} options={{ title: 'Ngôn ngữ' }} />
-    <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Đổi mật khẩu' }} />
-    <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Cài đặt' }} />
-    <Stack.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: false }} />
-    <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
-  </Stack.Navigator>
-  );
-}
 
 const UserNavigator = () => {
 
-  const [theme, setTheme] = useState('light');// Initialize as null to wait for AsyncStorage
+  const [theme, setTheme] = useState('light'); // Initialize as null to wait for AsyncStorage
 
   // Load theme from AsyncStorage when app starts
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light');
+      setTheme(savedTheme || 'light'); // Default to light if no theme saved
     };
-  
+
     loadTheme();
-  }, []);
+
+    // Listen for theme changes in AsyncStorage
+      const themeListener = setInterval(async () => {
+        const newTheme = await AsyncStorage.getItem('theme');
+        if (newTheme !== theme) {
+          setTheme(newTheme);
+        }
+      }, 500); // Check every 500ms for updates
+
+      return () => clearInterval(themeListener); // Cleanup listener
+    }, [theme]);
 
   // Prevent UI flicker while loading theme
 
