@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect , View,Text} from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 
 // Import main screens
@@ -37,6 +38,7 @@ import CourseDetail2 from '../../screen/User/Home_Detail/CourseDetail2'; // Thê
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+
 // Home Stack Navigator
 const HomeStackNavigator = () => {
   const [theme, setTheme] = useState(null); // Initialize theme
@@ -44,21 +46,12 @@ const HomeStackNavigator = () => {
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); // Default to light if no theme saved
+      setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    // Listen for theme changes in AsyncStorage
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500); // Check every 500ms for updates
-
-    return () => clearInterval(themeListener); // Cleanup listener when unmounting
-  }, [theme]);
+  }, []);
+  
 
   // Prevent UI flicker while loading theme
   if (theme === null) {
