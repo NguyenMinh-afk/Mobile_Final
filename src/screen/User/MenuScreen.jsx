@@ -1,56 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
+import { AuthContext } from '../../contexts/AuthContext'; // Import AuthContext
 
 export default function MenuScreen() {
   const navigation = useNavigation();
-  const [theme, setTheme] = useState(null); // Initialize as null
+  const { signOut } = useContext(AuthContext); // Lấy hàm signOut từ AuthContext
+  const [theme, setTheme] = useState(null);
 
-  // Load theme from AsyncStorage when screen mounts
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); // Ensure correct theme is applied
+      setTheme(savedTheme || 'light');
     };
 
     loadTheme();
 
-    // Listen for theme changes in AsyncStorage
     const themeListener = setInterval(async () => {
       const newTheme = await AsyncStorage.getItem('theme');
       if (newTheme !== theme) {
         setTheme(newTheme);
       }
-    }, 500); // Check every 500ms for changes
+    }, 500);
 
-    return () => clearInterval(themeListener); // Cleanup listener
+    return () => clearInterval(themeListener);
   }, [theme]);
 
-  const handleSignOut = () => {
-    navigation.replace('SignIn');
+  const handleSignOut = async () => {
+    await signOut(); // Gọi hàm signOut từ AuthContext
+    navigation.replace('SignIn'); // Điều hướng về SignIn
   };
 
-  // Prevent UI flicker while loading theme
+  const handlePress = (screen, isSignOut, label) => {
+    if (isSignOut) {
+      handleSignOut();
+    } else if (screen) {
+      navigation.navigate(screen);
+    } else {
+      Alert.alert('Thông báo', `Chức năng "${label}" hiện chưa được hỗ trợ.`);
+    }
+  };
+
   if (theme === null) {
-    return <View style={styles.loadingContainer}><Text>Loading...</Text></View>;
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
   }
 
   const menuOptions = [
-    { icon: "person-outline", label: "Thông tin cá nhân", screen: "PersonalInfo" },
-    { icon: "key-outline", label: "Đổi mật khẩu", screen: "ChangePassword" },
-    { icon: "language", label: "Ngôn ngữ", screen: "Language" },
-    { icon: "settings-outline", label: "Cài đặt", screen: "Settings" },
-    { icon: "chatbubble-ellipses-outline", label: "Hỗ trợ từ kỹ thuật viên" },
-    { icon: "log-out-outline", label: "Đăng xuất", screen: "SignIn", isSignOut: true }
+    { icon: 'person-outline', label: 'Thông tin cá nhân', screen: 'PersonalInfo' },
+    { icon: 'key-outline', label: 'Đổi mật khẩu', screen: 'ChangePassword' },
+    { icon: 'language', label: 'Ngôn ngữ', screen: 'Language' },
+    { icon: 'settings-outline', label: 'Cài đặt', screen: 'Settings' },
+    { icon: 'chatbubble-ellipses-outline', label: 'Hỗ trợ từ kỹ thuật viên' },
+    { icon: 'log-out-outline', label: 'Đăng xuất', screen: 'SignIn', isSignOut: true },
   ];
 
   return (
     <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
       <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
-        {/* Profile Card */}
         <View style={[styles.profileCard, theme === 'dark' && styles.darkProfileCard]}>
           <Image source={{ uri: 'https://via.placeholder.com/60' }} style={styles.avatar} />
           <View style={styles.profileInfo}>
@@ -65,7 +77,6 @@ export default function MenuScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Menu Items */}
         <View style={styles.menuContainer}>
           {menuOptions.map(({ icon, label, screen, isSignOut }, index) => (
             <TouchableOpacity
@@ -73,10 +84,10 @@ export default function MenuScreen() {
               style={[
                 styles.menuItem,
                 theme === 'dark' && styles.darkMenuItem,
-                index < menuOptions.length - 1 && styles.menuItemWithBorder, // Apply border only if not last item
+                index < menuOptions.length - 1 && styles.menuItemWithBorder,
                 theme === 'dark' && index < menuOptions.length - 1 && styles.darkMenuItemWithBorder,
               ]}
-              onPress={() => (isSignOut ? handleSignOut() : navigation.navigate(screen))}
+              onPress={() => handlePress(screen, isSignOut, label)}
             >
               <Ionicons name={icon} size={22} color={theme === 'dark' ? '#f4f3f4' : '#000'} style={styles.menuIcon} />
               <Text style={[styles.menuText, theme === 'dark' && styles.darkText]}>{label}</Text>
@@ -140,13 +151,13 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     flexGrow: 1,
-    paddingVertical: 0, // Remove extra padding
+    paddingVertical: 0,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 10,
-    paddingVertical: 30, // Reduce vertical padding
+    paddingVertical: 30,
     backgroundColor: '#f2f0ed',
   },
   darkMenuItem: {
@@ -168,5 +179,10 @@ const styles = StyleSheet.create({
   },
   darkText: {
     color: '#f4f3f4',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

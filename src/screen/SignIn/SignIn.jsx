@@ -1,10 +1,19 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Alert } from 'react-native'; // Đã thêm Image
+import React, { useState, useContext, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
+  Image,
+  Alert,
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { AuthContext } from '../../contexts/AuthContext'; 
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
-import { validateSignIn } from "../../utils/Validation";
-import { checkLogin } from "../../utils/CheckAccount";
+import { AuthContext } from '../../contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { validateSignIn } from '../../utils/Validation';
+import { checkLogin } from '../../utils/CheckAccount';
 
 const SignIn = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -12,7 +21,25 @@ const SignIn = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { setIsLoggedIn } = useContext(AuthContext); // Sử dụng context
+  const { setIsLoggedIn, user, setUser } = useContext(AuthContext);
+
+  // Tự động điền username nếu có trong AsyncStorage
+  useEffect(() => {
+    const loadStoredUser = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUsername(parsedUser.username);
+          setRememberMe(true); // Đặt rememberMe thành true nếu có dữ liệu
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải thông tin người dùng:', error);
+      }
+    };
+
+    loadStoredUser();
+  }, []);
 
   const handleSignIn = async () => {
     if (!username || !password) {
@@ -34,27 +61,37 @@ const SignIn = ({ navigation }) => {
       return;
     }
 
+    // Cập nhật trạng thái đăng nhập và thông tin người dùng
+    setIsLoggedIn(true);
+    const userData = { username, role };
+    setUser(userData);
+
     // Nếu "Remember Me" được chọn, lưu thông tin vào AsyncStorage
     if (rememberMe) {
       try {
-        await AsyncStorage.setItem('user', JSON.stringify({ username, role }));
+        await AsyncStorage.setItem('user', JSON.stringify(userData));
+        console.log('Lưu thông tin người dùng:', userData);
       } catch (error) {
         console.error('Lỗi khi lưu thông tin:', error);
       }
+    } else {
+      // Không xóa user nếu không chọn rememberMe, chỉ để trạng thái isLoggedIn
+      console.log('Không chọn Remember Me, giữ trạng thái isLoggedIn mà không lưu user');
     }
-
-    // Cập nhật trạng thái đăng nhập
-    setIsLoggedIn(true);
 
     // Hiển thị thông báo đăng nhập thành công
     Alert.alert('Thành công', `Đăng nhập thành công! Vai trò: ${role}`, [{ text: 'OK' }]);
 
     // Điều hướng đến màn hình chính
-    navigation.replace("LoginNavigator", { role });
+    navigation.replace('LoginNavigator', { role });
   };
 
   return (
-    <ImageBackground source={require('../../assets/background.png')} style={styles.background} imageStyle={{ opacity: 0.7 }}>
+    <ImageBackground
+      source={require('../../assets/background.png')}
+      style={styles.background}
+      imageStyle={{ opacity: 0.7 }}
+    >
       <View style={styles.frame}>
         <View style={styles.container}>
           <TextInput
@@ -77,8 +114,15 @@ const SignIn = ({ navigation }) => {
           </View>
           <View style={styles.rememberForgotContainer}>
             <View style={styles.rememberMeContainer}>
-              <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.checkboxContainer}>
-                <FontAwesome name={rememberMe ? 'check-square-o' : 'square-o'} size={24} color="#000" />
+              <TouchableOpacity
+                onPress={() => setRememberMe(!rememberMe)}
+                style={styles.checkboxContainer}
+              >
+                <FontAwesome
+                  name={rememberMe ? 'check-square-o' : 'square-o'}
+                  size={24}
+                  color="#000"
+                />
               </TouchableOpacity>
               <Text style={styles.rememberMeText}>Remember for 30 days</Text>
             </View>

@@ -1,31 +1,33 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { AuthContext } from '../../contexts/AuthContext'; // Import AuthContext
 
 export default function AccountScreen({ navigation }) {
-  const handleSignOut = () => {
-    // Xóa dữ liệu phiên người dùng tại đây nếu cần (ví dụ: AsyncStorage)
-    navigation.replace('SignIn'); // Điều hướng về màn hình SignIn
+  const { signOut } = useContext(AuthContext); // Lấy hàm signOut từ AuthContext
+
+  const handleSignOut = async () => {
+    await signOut(); // Gọi hàm signOut từ AuthContext
+    navigation.replace('SignIn'); // Điều hướng về SignIn
   };
 
   const handleManageContent = () => {
-    navigation.navigate('ManageContent'); // Điều hướng đến màn hình quản lý nội dung
+    navigation.navigate('ManageContent');
   };
 
   const handleSystemSettings = () => {
-    navigation.navigate('SystemSettings'); // Điều hướng đến màn hình cài đặt hệ thống
+    navigation.navigate('SystemSettings');
   };
 
   const handleActivityLogs = () => {
-    navigation.navigate('ActivityLogs'); // Điều hướng đến màn hình xem nhật ký hoạt động
+    navigation.navigate('ActivityLogs');
   };
 
   return (
     <View style={styles.container}>
-
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/80' }} // Placeholder avatar
+          source={{ uri: 'https://via.placeholder.com/80' }}
           style={styles.avatar}
         />
         <View style={styles.profileInfo}>
