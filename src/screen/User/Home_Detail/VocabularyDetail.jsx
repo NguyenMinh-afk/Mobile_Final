@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -10,73 +11,77 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const VocabularyDetail = () => {
+const ReadingDetail = () => {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); 
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
   const [activeTab, setActiveTab] = useState('intro');
   const navigation = useNavigation();
 
   const lessons = [
-    { id: '1', title: 'Vocabulary Lesson 1: Self-Discovery' },
-    { id: '2', title: 'Vocabulary Lesson 2: Mindfulness in Words' },
-    { id: '3', title: 'Vocabulary Lesson 3: The Power of Gratitude' },
-    { id: '4', title: 'Vocabulary Lesson 4: Inner Growth' },
-    { id: '5', title: 'Vocabulary Lesson 5: Positive Thinking' },
-    { id: '6', title: 'Vocabulary Lesson 6: Embracing Change' },
+    { id: '1', title: 'Reading Lesson 1: Self-Discovery' },
+    { id: '2', title: 'Reading Lesson 2: Mindfulness in Words' },
+    { id: '3', title: 'Reading Lesson 3: The Power of Gratitude' },
+    { id: '4', title: 'Reading Lesson 4: Inner Growth' },
+    { id: '5', title: 'Reading Lesson 5: Positive Thinking' },
+    { id: '6', title: 'Reading Lesson 6: Embracing Change' },
   ];
 
   return (
-    <View style={styles.container}>
-      {/* Background Header */}
+    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       <ImageBackground
         source={require('../../../assets/User/vocabulary_bg.png')}
-        style={styles.headerImage}
+        style={styles.headerImage} // No theme-based darkening
       >
         <View style={styles.headerIcons}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="ellipsis-vertical" size={24} color="black" />
+            <Ionicons name="arrow-back" size={24} color={theme === 'dark' ? '#fff' : 'black'} />
           </TouchableOpacity>
         </View>
       </ImageBackground>
 
+
       {/* Tab selector */}
-      <View style={styles.tabWrapper}>
-        <View style={styles.tabContainer}>
+      <View style={[styles.tabWrapper, theme === 'dark' && styles.darkTabWrapper]}>
+        <View style={[styles.tabContainer, theme === 'dark' && styles.darkTabContainer]}>
           {['intro', 'lesson', 'post'].map((tab) => (
             <TouchableOpacity
               key={tab}
               onPress={() => setActiveTab(tab)}
-              style={[
-                styles.tab,
-                activeTab === tab && styles.activeTab,
-              ]}
+              style={[styles.tab, activeTab === tab && styles.activeTab, theme === 'dark' && styles.darkTab]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab && styles.activeTabText,
-                ]}
-              >
+              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText, theme === 'dark' && styles.darkText]}>
                 {tab === 'intro' ? 'Giới thiệu' : tab === 'lesson' ? 'Bài học' : 'Bài đăng'}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
+          
       </View>
 
       {/* Tab Content */}
       <View style={styles.content}>
         {activeTab === 'intro' && (
           <View>
-            <Text style={styles.sectionTitle}>Mô tả:</Text>
-            <Text style={styles.descriptionText}>
-              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. 
-              Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, 
-              bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, 
-              hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn 
-              ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
-            </Text>
+            <Text style={[styles.sectionTitle,theme === 'dark' && styles.darkText]}>Mô tả:</Text>
+            <Text style={[styles.descriptionText, theme === 'dark' && styles.darkText]}>  
+            Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.</Text>
           </View>
         )}
 
@@ -86,7 +91,7 @@ const VocabularyDetail = () => {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View style={styles.lessonItem}>
-                <Text style={styles.lessonText}>{item.title}</Text>
+                <Text style={[styles.lessonText,theme === 'dark' && styles.darkText]}>{item.title}</Text>
               </View>
             )}
             ListFooterComponent={
@@ -105,12 +110,12 @@ const VocabularyDetail = () => {
       </View>
 
       {/* Footer Buttons */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="share-social-outline" size={24} color="black" />
+      <View style={[styles.footer, theme === 'dark' && styles.darkFooter]}>
+        <TouchableOpacity style={[styles.iconButton, theme === 'dark' && styles.darkIconButton]}>
+          <Ionicons name="share-social-outline" size={24} color={theme === 'dark' ? '#fff' : 'black'} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionText}>Học ngay</Text>
+        <TouchableOpacity style={[styles.actionButton, theme === 'dark' && styles.darkActionButton]}>
+          <Text style={[styles.actionText, theme === 'dark' && styles.darkText]}>Học ngay</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -229,6 +234,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+
+  darkTabContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkTab: {
+    backgroundColor: '#3a3a3a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+  darkFooter: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkIconButton: {
+    borderColor: '#fff',
+  },
+  darkActionButton: {
+    backgroundColor: '#444',
+    borderColor: '#fff',
+  },
+
 });
 
-export default VocabularyDetail;
+export default ReadingDetail;

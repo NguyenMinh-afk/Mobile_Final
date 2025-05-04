@@ -2,29 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ChangePasswordScreen() {
   const [theme, setTheme] = useState('light'); // Default theme
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    // Listen for theme changes
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
+  }, []);
+  
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+      headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
+    });
   }, [theme]);
-
+  
   return (
     <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
       <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>

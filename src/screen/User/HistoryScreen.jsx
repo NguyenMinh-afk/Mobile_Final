@@ -11,18 +11,14 @@ const HistoryScreen = () => {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
-  }, [theme]);
+  
+    // Listen for updates when navigating back or theme changes
+    const unsubscribe = navigation.addListener('focus', loadTheme);
+  
+    return () => unsubscribe(); // Cleanup listener
+  }, [navigation]);
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('done');
   const [searchText, setSearchText] = useState('');
