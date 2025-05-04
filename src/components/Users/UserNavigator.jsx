@@ -41,7 +41,7 @@ const Stack = createStackNavigator();
 
 // Home Stack Navigator
 const HomeStackNavigator = () => {
-  const [theme, setTheme] = useState(null); // Initialize theme
+  const [theme, setTheme] = useState('light'); // Initialize theme
 
   useEffect(() => {
     const loadTheme = async () => {

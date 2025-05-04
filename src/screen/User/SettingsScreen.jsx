@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsScreen() {
-  const [theme, setTheme] = useState(null); // Initialize as null to wait for AsyncStorage
+  const [theme, setTheme] = useState('light'); // Initialize as null to wait for AsyncStorage
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const [motivationalMessages, setMotivationalMessages] = useState(true);

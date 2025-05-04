@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function MenuScreen() {
   const navigation = useNavigation();
-  const [theme, setTheme] = useState(null); // Initialize as null
+  const [theme, setTheme] = useState('light');// Initialize as null
 
   // Load theme from AsyncStorage when screen mounts
   useEffect(() => {
