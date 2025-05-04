@@ -1,48 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ChangePasswordScreen() {
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.title}></Text>
+  const [theme, setTheme] = useState('light'); // Default theme
 
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
+
+    loadTheme();
+
+    // Listen for theme changes
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
+
+  return (
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+      <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+        <Text style={styles.title}></Text>
+        <View style={[styles.formContainer, theme === 'dark' && styles.darkFormContainer]}>
+          <View style={[styles.inputContainer, theme === 'dark' && styles.darkInputContainer]}>
+            <Ionicons name="lock-closed-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.inputIcon} />
             <TextInput
               placeholder="Mật khẩu cũ"
               secureTextEntry
-              style={styles.input}
-              placeholderTextColor="#888"
+              style={[styles.input, theme === 'dark' && styles.darkText]}
+              placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
             />
           </View>
-          <View style={styles.inputContainer}>
-            <Ionicons name="lock-open-outline" size={20} color="#888" style={styles.inputIcon} />
+          <View style={[styles.inputContainer, theme === 'dark' && styles.darkInputContainer]}>
+            <Ionicons name="lock-open-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.inputIcon} />
             <TextInput
               placeholder="Mật khẩu mới"
               secureTextEntry
-              style={styles.input}
-              placeholderTextColor="#888"
+              style={[styles.input, theme === 'dark' && styles.darkText]}
+              placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
             />
           </View>
-          <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
+
+          <View style={[styles.inputContainer, theme === 'dark' && styles.darkInputContainer]}>
+            <Ionicons name="lock-closed-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.inputIcon} />
             <TextInput
               placeholder="Xác nhận mật khẩu mới"
               secureTextEntry
-              style={styles.input}
-              placeholderTextColor="#888"
+              style={[styles.input, theme === 'dark' && styles.darkText]}
+              placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
             />
           </View>
 
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.cancelButton}>
-              <Text style={styles.cancelText}>Hủy</Text>
+            <TouchableOpacity style={[styles.cancelButton, theme === 'dark' && styles.darkCancelButton]}>
+              <Text style={[styles.cancelText, theme === 'dark' && styles.darkText]}>Hủy</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton}>
-              <Text style={styles.saveText}>LƯU THAY ĐỔI</Text>
+            <TouchableOpacity style={[styles.saveButton, theme === 'dark' && styles.darkSaveButton]}>
+              <Text style={[styles.saveText, theme === 'dark' && styles.darkText]}>LƯU THAY ĐỔI</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -55,12 +77,12 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F5F7FB',
-    bottom: 50,
   },
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 0, // Remove unnecessary bottom padding
   },
   title: {
     fontSize: 24,
@@ -140,4 +162,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkFormContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkInputContainer: {
+    backgroundColor: '#3a3a3a',
+    borderColor: '#555',
+  },
+  darkCancelButton: {
+    backgroundColor: '#555',
+  },
+  darkSaveButton: {
+    backgroundColor: '#0066cc',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+
 });

@@ -1,93 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsScreen() {
+  const [theme, setTheme] = useState(null); // Initialize as null to wait for AsyncStorage
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const [theme, setTheme] = useState('auto');
   const [motivationalMessages, setMotivationalMessages] = useState(true);
   const [listeningExercises, setListeningExercises] = useState(false);
 
+  // Load previous settings on startup
+  useEffect(() => {
+    const loadSettings = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      const savedSound = await AsyncStorage.getItem('soundEnabled');
+      const savedAnimations = await AsyncStorage.getItem('animationsEnabled');
+      const savedMessages = await AsyncStorage.getItem('motivationalMessages');
+      const savedListening = await AsyncStorage.getItem('listeningExercises');
+
+      if (savedTheme) setTheme(savedTheme); else setTheme('light'); // Correct theme persistence
+      if (savedSound !== null) setSoundEnabled(JSON.parse(savedSound));
+      if (savedAnimations !== null) setAnimationsEnabled(JSON.parse(savedAnimations));
+      if (savedMessages !== null) setMotivationalMessages(JSON.parse(savedMessages));
+      if (savedListening !== null) setListeningExercises(JSON.parse(savedListening));
+    };
+
+    loadSettings();
+  }, []);
+
+  // Save theme when toggled
+  const toggleTheme = async () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    await AsyncStorage.setItem('theme', newTheme);
+  };
+
+  if (theme === null) {
+    return <View style={styles.loadingContainer}><Text>Loading...</Text></View>;
+  }
+
   return (
-    <View style={styles.container}>
-
-      <View style={styles.settingsContainer}>
-        <TouchableOpacity style={styles.settingRow}>
+    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+      <View style={[styles.settingsContainer, theme === 'dark' && styles.darkSettings]}>
+        {/* Dark Mode Toggle */}
+        <TouchableOpacity style={[styles.settingRow, theme === 'dark' && styles.darkSettingRow]}>
           <View style={styles.settingLabel}>
-            <Ionicons name="volume-high-outline" size={24} color="#333" style={styles.icon} />
-            <Text style={styles.settingText}>Sound effects</Text>
+            <Ionicons name={theme === 'dark' ? "moon-outline" : "sunny-outline"} size={24} color={theme === 'dark' ? "#f4f3f4" : "#333"} style={styles.icon} />
+            <Text style={[styles.settingText, theme === 'dark' && styles.darkText]}>
+              Dark Mode ({theme === 'dark' ? 'Enabled' : 'Disabled'})
+            </Text>
           </View>
           <Switch
-            value={soundEnabled}
-            onValueChange={setSoundEnabled}
+            value={theme === 'dark'}
+            onValueChange={toggleTheme}
             trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={soundEnabled ? '#ffffff' : '#f4f3f4'}
+            thumbColor={theme === 'dark' ? '#ffffff' : '#f4f3f4'}
             style={styles.switch}
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.settingRow}>
-          <View style={styles.settingLabel}>
-            <Ionicons name="sparkles-outline" size={24} color="#333" style={styles.icon} />
-            <Text style={styles.settingText}>Animations</Text>
-          </View>
-          <Switch
-            value={animationsEnabled}
-            onValueChange={setAnimationsEnabled}
-            trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={animationsEnabled ? '#ffffff' : '#f4f3f4'}
-            style={styles.switch}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.settingRow}>
-          <View style={styles.settingLabel}>
-            <Ionicons name="moon-outline" size={24} color="#333" style={styles.icon} />
-            <Text style={styles.settingText}>Chế độ tối</Text>
-          </View>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={theme}
-              onValueChange={setTheme}
-              style={styles.picker}
-              dropdownIconColor="#333"
-            >
-              <Picker.Item label="Tự động" value="auto" />
-              <Picker.Item label="Sáng" value="light" />
-              <Picker.Item label="Tối" value="dark" />
-            </Picker>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.settingRow}>
-          <View style={styles.settingLabel}>
-            <Ionicons name="heart-outline" size={24} color="#333" style={styles.icon} />
-            <Text style={styles.settingText}>Motivational messages</Text>
-          </View>
-          <Switch
-            value={motivationalMessages}
-            onValueChange={setMotivationalMessages}
-            trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={motivationalMessages ? '#ffffff' : '#f4f3f4'}
-            style={styles.switch}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.settingRow}>
-          <View style={styles.settingLabel}>
-            <Ionicons name="ear-outline" size={24} color="#333" style={styles.icon} />
-            <Text style={styles.settingText}>Listening exercises</Text>
-          </View>
-          <Switch
-            value={listeningExercises}
-            onValueChange={setListeningExercises}
-            trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={listeningExercises ? '#ffffff' : '#f4f3f4'}
-            style={styles.switch}
-          />
-        </TouchableOpacity>
+        {/* Other Settings */}
+        {[
+          { key: "soundEnabled", label: "Sound effects", value: soundEnabled, setValue: setSoundEnabled },
+          { key: "animationsEnabled", label: "Animations", value: animationsEnabled, setValue: setAnimationsEnabled },
+          { key: "motivationalMessages", label: "Motivational messages", value: motivationalMessages, setValue: setMotivationalMessages },
+          { key: "listeningExercises", label: "Listening exercises", value: listeningExercises, setValue: setListeningExercises }
+        ].map(({ key, label, value, setValue }) => (
+          <TouchableOpacity key={key} style={[styles.settingRow, theme === 'dark' && styles.darkSettingRow]}>
+            <View style={styles.settingLabel}>
+              <Ionicons name={key.includes("sound") ? "volume-high-outline" : key.includes("animation") ? "sparkles-outline" : key.includes("message") ? "heart-outline" : "ear-outline"} size={24} color={theme === 'dark' ? "#f4f3f4" : "#333"} style={styles.icon} />
+              <Text style={[styles.settingText, theme === 'dark' && styles.darkText]}>{label}</Text>
+            </View>
+            <Switch
+              value={value}
+              onValueChange={(newValue) => {
+                setValue(newValue);
+                AsyncStorage.setItem(key, JSON.stringify(newValue)); // Persist each setting
+              }}
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
+              thumbColor={value ? '#ffffff' : '#f4f3f4'}
+              style={styles.switch}
+            />
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );
@@ -99,22 +95,17 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f0f4ff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 30,
-    marginTop: 20,
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
   },
   settingsContainer: {
     backgroundColor: '#ffffff',
     borderRadius: 15,
     padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
     elevation: 5,
+  },
+  darkSettings: {
+    backgroundColor: '#2a2a2a',
   },
   settingRow: {
     flexDirection: 'row',
@@ -126,37 +117,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#f8faff',
   },
+  darkSettingRow: {
+    backgroundColor: '#3a3a3a',
+  },
   settingLabel: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-  },
-  icon: {
-    marginRight: 12,
   },
   settingText: {
     fontSize: 16,
     color: '#333',
     fontWeight: '500',
   },
+  darkText: {
+    color: '#f4f3f4',
+  },
   switch: {
     transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }],
-  },
-  pickerContainer: {
-    position: 'relative',
-    width: 150,
-  },
-  picker: {
-    height: 40,
-    width: '100',
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#d1d1d1',
-    paddingHorizontal: 10,
-  },
-  pickerItem: {
-    fontSize: 16,
-    color: '#333',
   },
 });

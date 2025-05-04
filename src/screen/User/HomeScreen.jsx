@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Avatar from '../../assets/User/user_img.png';
@@ -10,13 +10,31 @@ import LessonImage2 from '../../assets/User/lesson_image2.png';
 import GoalImage from '../../assets/User/goal_image.png';
 import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [theme, setTheme] = useState('light');
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
 
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
   const insights = [
     { emoji: '📘', title: 'Vocabulary', sub: 'Start Learning', navigateTo: 'VocabularyDetail' },
     { emoji: '✏️', title: 'Grammar', sub: 'Practice Grammar', navigateTo: 'GrammarDetail' },
@@ -63,29 +81,29 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container}>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+      <ScrollView style={[styles.container, theme === 'dark' && styles.darkContainer]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, theme === 'dark' && styles.darkHeader]}>
           <TouchableOpacity onPress={() => navigation.navigate('PersonalInfo')}>
             <Image source={Avatar} style={styles.avatar} />
           </TouchableOpacity>
-          <View style={styles.searchContainer}>
-            <Ionicons name="search-outline" size={20} color="#888" style={styles.searchIcon} />
+          <View style={[styles.searchContainer, theme === 'dark' && styles.darkSearchContainer]}>
+            <Ionicons name="search-outline" size={20} color={theme === 'dark' ? '#bbb' : '#888'} style={styles.searchIcon} />
             <TextInput
               placeholder="Tìm kiếm"
-              style={styles.searchInput}
+              style={[styles.searchInput, theme === 'dark' && styles.darkText]}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholderTextColor="#888"
+              placeholderTextColor={theme === 'dark' ? '#777' : '#888'}
             />
             <TouchableOpacity onPress={() => console.log('Filter pressed')}>
-              <Ionicons name="filter-outline" size={24} color="#333" />
+              <Ionicons name="filter-outline" size={24} color={theme === 'dark' ? '#bbb' : '#333'} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
             <View style={styles.notificationContainer}>
-              <Ionicons name="notifications-outline" size={24} color="#333" />
+              <Ionicons name="notifications-outline" size={24} color={theme === 'dark' ? '#bbb' : '#333'} />
               <View style={styles.notificationDot} />
             </View>
           </TouchableOpacity>
@@ -105,40 +123,40 @@ export default function HomeScreen() {
 
         {/* Your Insights */}
         {filteredInsights.length > 0 && (
-          <View>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Your Insights</Text>
-              <TouchableOpacity onPress={() => console.log('Navigating to Insights')}>
-                <Text style={styles.viewAllText}>Xem tất cả</Text>
-              </TouchableOpacity>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.insightsRow}
-            >
-              {filteredInsights.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.insightItem}
-                  onPress={() => item.navigateTo && navigation.navigate(item.navigateTo)}
-                >
-                  <View style={styles.insightCircle}>
-                    <Text style={styles.insightText}>{item.emoji}</Text>
-                  </View>
-                  <Text style={styles.insightTitle}>{item.title}</Text>
-                  <Text style={styles.insightSub}>{item.sub}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+          <View style={[styles.sectionContainer, theme === 'dark' && styles.darkSectionContainer]}>
+          <View style={[styles.sectionHeader, theme === 'dark' && styles.darkSectionHeader]}>
+            <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Your Insights</Text>
+            <TouchableOpacity onPress={() => console.log('Navigating to Insights')}>
+              <Text style={[styles.viewAllText]}>Xem tất cả</Text>
+            </TouchableOpacity>
           </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.insightsRow}
+          >
+            {filteredInsights.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.insightItem, theme === 'dark' && styles.darkInsightItem]}
+                onPress={() => item.navigateTo && navigation.navigate(item.navigateTo)}
+              >
+                <View style={[styles.insightCircle, theme === 'dark' && styles.darkInsightCircle]}>
+                  <Text style={[styles.insightText, theme === 'dark' && styles.darkText]}>{item.emoji}</Text>
+                </View>
+                <Text style={[styles.insightTitle, theme === 'dark' && styles.darkText]}>{item.title}</Text>
+                <Text style={[styles.insightSub, theme === 'dark' && styles.darkText]}>{item.sub}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
         )}
 
         {/* Featured Lessons */}
         {filteredLessons.length > 0 && (
           <View>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Featured Lessons</Text>
+            <View style={[styles.sectionHeader, theme === 'dark' && styles.darkSectionHeader]}>
+            <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Featured Lessons</Text>
               <TouchableOpacity onPress={() => console.log('Navigating to Lessons')}>
                 <Text style={styles.viewAllText}>Xem tất cả</Text>
               </TouchableOpacity>
@@ -175,8 +193,8 @@ export default function HomeScreen() {
         {/* Daily Challenges */}
         {filteredDailyChallenges.length > 0 && (
           <View>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Daily Challenges</Text>
+            <View style={[styles.sectionHeader, theme === 'dark' && styles.darkSectionHeader]}>
+            <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Daily Challenges</Text>
               <TouchableOpacity onPress={() => console.log('Navigating to DailyChallenges')}>
                 <Text style={styles.viewAllText}>Xem tất cả</Text>
               </TouchableOpacity>
@@ -205,8 +223,8 @@ export default function HomeScreen() {
         {/* Recommended Courses */}
         {filteredRecommendedCourses.length > 0 && (
           <View>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Recommended Courses</Text>
+            <View style={[styles.sectionHeader, theme === 'dark' && styles.darkSectionHeader]}>
+            <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Recommended Courses</Text>
               <TouchableOpacity onPress={() => console.log('Navigating to RecommendedCourses')}>
                 <Text style={styles.viewAllText}>Xem tất cả</Text>
               </TouchableOpacity>
@@ -530,4 +548,24 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'center',
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkHeader: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkSearchContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+
+  darkInsightCircle: {
+    backgroundColor: '#3a3a3a',
+  },
+
 });

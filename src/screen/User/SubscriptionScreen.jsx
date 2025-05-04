@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SubscriptionScreen = () => {
   const [selectedPlan, setSelectedPlan] = useState('monthly');
+  const [theme, setTheme] = useState('light');
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); 
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
 
   const handleUpdatePlan = () => {
     // Điều hướng đến PaymentScreen và truyền selectedPlan
@@ -13,15 +33,15 @@ const SubscriptionScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Subscription</Text>
-        </View>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={[styles.header, theme === 'dark' && styles.darkHeader]}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color={theme === 'dark' ? '#f4f3f4' : '#fff'} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, theme === 'dark' && styles.darkText]}>Subscription</Text>
+      </View>
+
 
         {/* Illustration */}
         <View style={styles.imageContainer}>
@@ -29,19 +49,21 @@ const SubscriptionScreen = () => {
         </View>
 
         {/* Title */}
-        <Text style={styles.mainTitle}>Vui lòng chọn gói đăng ký để tiếp tục</Text>
+        <Text style={[styles.mainTitle, theme === 'dark' && styles.darkText]}>
+          Vui lòng chọn gói đăng ký để tiếp tục
+        </Text>
 
         {/* Description */}
         <View style={styles.features}>
           <View style={styles.featureItem}>
             <Ionicons name="checkmark-circle" size={20} color="#6A5AE0" />
-            <Text style={styles.featureText}>
+            <Text style={[styles.featureText, theme === 'dark' && styles.darkText]}>
               Hàng trăm bài học từ cơ bản đến nâng cao.
             </Text>
           </View>
           <View style={styles.featureItem}>
             <Ionicons name="checkmark-circle" size={20} color="#6A5AE0" />
-            <Text style={styles.featureText}>
+            <Text style={[styles.featureText, theme === 'dark' && styles.darkText]}>
               Học văn hóa, du lịch và kinh doanh qua các khóa học đặc biệt.
             </Text>
           </View>
@@ -223,6 +245,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkHeader: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkText: {
+    color: '#f4f3f4',
   },
 });
 

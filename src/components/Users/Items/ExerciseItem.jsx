@@ -1,8 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
+  const [theme, setTheme] = useState('light');
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
   const [menuVisible, setMenuVisible] = useState(false);
 
   const toggleMenu = () => {
@@ -20,17 +39,17 @@ const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={[styles.container, theme === 'dark' && styles.darkContainer]} onPress={onPress}>
       <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.infoContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.category}>Danh mục: {item.category}</Text>
+      <View style={[styles.infoContainer, theme === 'dark' && styles.darkInfoContainer]}>
+        <Text style={[styles.title, theme === 'dark' && styles.darkText]}>{item.title}</Text>
+        <Text style={[styles.category, theme === 'dark' && styles.darkText]}>Danh mục: {item.category}</Text>
         <View style={styles.footer}>
           <Image source={{ uri: item.authorAvatar }} style={styles.avatar} />
-          <Text style={styles.author}>{item.author}</Text>
-          <Text style={styles.date}>{item.date}</Text>
-          <View style={styles.easyTag}>
-            <Text style={styles.easyText}>Easy</Text>
+          <Text style={[styles.author, theme === 'dark' && styles.darkText]}>{item.author}</Text>
+          <Text style={[styles.date, theme === 'dark' && styles.darkText]}>{item.date}</Text>
+          <View style={[styles.easyTag, theme === 'dark' && styles.darkEasyTag]}>
+            <Text style={[styles.easyText, theme === 'dark' && styles.darkText]}>Easy</Text>
           </View>
         </View>
       </View>
@@ -66,14 +85,14 @@ const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
           style={styles.modalOverlay}
           onPress={() => setMenuVisible(false)}
         >
-          <View style={styles.menuContainer}>
+          <View style={[styles.menuContainer, theme === 'dark' && styles.darkMenuContainer]}>
             <TouchableOpacity style={styles.menuItem} onPress={handleView}>
-              <Ionicons name="eye-outline" size={20} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Xem</Text>
+              <Ionicons name="eye-outline" size={20} color={theme === 'dark' ? '#fff' : '#333'} style={styles.menuIcon} />
+              <Text style={[styles.menuText, theme === 'dark' && styles.darkText]}>Xem</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
-              <Ionicons name="trash-outline" size={20} color="#FF0000" style={styles.menuIcon} />
-              <Text style={[styles.menuText, { color: '#FF0000' }]}>Xóa</Text>
+              <Ionicons name="trash-outline" size={20} color={theme === 'dark' ? '#FF5555' : '#FF000'} style={styles.menuIcon} />
+              <Text style={[styles.menuText, theme === 'dark' && styles.darkText, { color: theme === 'dark' ? '#FF5555' : '#FF0000' }]}>Xóa</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -212,6 +231,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  darkContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkInfoContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkEasyTag: {
+    backgroundColor: '#444',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+  darkMenuContainer: {
+    backgroundColor: '#2a2a2a', // Darker background for dark mode
+    borderColor: '#555', // Adjust border if needed
+  },
+
 });
 
 export default ExerciseItem;

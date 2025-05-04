@@ -1,7 +1,10 @@
-import React from 'react';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect , View,Text} from 'react';
+
 
 // Import main screens
 import HomeScreen from '../../screen/User/HomeScreen';
@@ -35,8 +38,39 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Home Stack Navigator
-const HomeStackNavigator = () => (
-  <Stack.Navigator>
+const HomeStackNavigator = () => {
+  const [theme, setTheme] = useState(null); // Initialize theme
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); // Default to light if no theme saved
+    };
+
+    loadTheme();
+
+    // Listen for theme changes in AsyncStorage
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500); // Check every 500ms for updates
+
+    return () => clearInterval(themeListener); // Cleanup listener when unmounting
+  }, [theme]);
+
+  // Prevent UI flicker while loading theme
+  if (theme === null) {
+    return null;
+  }
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+        headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
+      }}
+    >
     <Stack.Screen name="HomeMain" component={HomeScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Notification" component={Notificationscreen} options={{ title: 'Thông báo' }} />
     <Stack.Screen name="VocabularyDetail" component={VocabularyDetail} options={{ title: 'Chi tiết từ vựng', headerShown: false }} />
@@ -53,7 +87,8 @@ const HomeStackNavigator = () => (
     <Stack.Screen name="CourseDetail2" component={CourseDetail2} options={{ title: 'Khóa học Advanced Business English', headerShown: false }} />
     <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} options={{ title: 'Thông tin cá nhân' }} />
   </Stack.Navigator>
-);
+  );
+}
 
 // History Stack Navigator
 const HistoryStackNavigator = () => (
@@ -77,8 +112,39 @@ const SavedStackNavigator = () => (
 );
 
 // Menu Stack Navigator
-const MenuStackNavigator = () => (
-  <Stack.Navigator>
+const MenuStackNavigator = () => {
+  const [theme, setTheme] = useState(null); // Initialize theme
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); // Default to light if no theme saved
+    };
+
+    loadTheme();
+
+    // Listen for theme changes in AsyncStorage
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500); // Check every 500ms for updates
+
+    return () => clearInterval(themeListener); // Cleanup listener when unmounting
+  }, [theme]);
+
+  // Prevent UI flicker while loading theme
+  if (theme === null) {
+    return null;
+  }
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+        headerTitleStyle: { color: theme === 'dark' ? '#f4f3f4' : '#333' },
+      }}
+    >
     <Stack.Screen name="MenuMain" component={MenuScreen} options={{ headerShown: false }} />
     <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} options={{ title: 'Thông tin cá nhân' }} />
     <Stack.Screen name="Language" component={LanguageScreen} options={{ title: 'Ngôn ngữ' }} />
@@ -87,36 +153,60 @@ const MenuStackNavigator = () => (
     <Stack.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Payment" component={PaymentScreen} options={{ headerShown: false }} />
   </Stack.Navigator>
-);
+  );
+}
 
-const UserNavigator = () => (
-  <Tab.Navigator
-    screenOptions={({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) => {
-        let iconName;
-        if (route.name === 'Home') {
-          iconName = focused ? 'home' : 'home-outline';
-        } else if (route.name === 'History') {
-          iconName = focused ? 'time' : 'time-outline';
-        } else if (route.name === 'Create') {
-          iconName = focused ? 'add-circle' : 'add-circle-outline';
-        } else if (route.name === 'Saved') {
-          iconName = focused ? 'bookmark' : 'bookmark-outline';
-        } else if (route.name === 'Menu') {
-          iconName = focused ? 'menu' : 'menu-outline';
+const UserNavigator = () => {
+
+  const [theme, setTheme] = useState(null); // Initialize as null to wait for AsyncStorage
+
+  // Load theme from AsyncStorage when app starts
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); // Default to light if no theme saved
+    };
+
+    loadTheme();
+
+    // Listen for theme changes in AsyncStorage
+      const themeListener = setInterval(async () => {
+        const newTheme = await AsyncStorage.getItem('theme');
+        if (newTheme !== theme) {
+          setTheme(newTheme);
         }
-        return <Ionicons name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: 'blue',
-      tabBarInactiveTintColor: 'gray',
-    })}
-  >
-    <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }} />
-    <Tab.Screen name="History" component={HistoryStackNavigator} options={{ headerShown: false }} />
-    <Tab.Screen name="Create" component={CreateStackNavigator} options={{ headerShown: false }} />
-    <Tab.Screen name="Saved" component={SavedStackNavigator} options={{ headerShown: false }} />
-    <Tab.Screen name="Menu" component={MenuStackNavigator} options={{ headerShown: false }} />
-  </Tab.Navigator>
-);
+      }, 500); // Check every 500ms for updates
+
+      return () => clearInterval(themeListener); // Cleanup listener
+    }, [theme]);
+
+  // Prevent UI flicker while loading theme
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          const icons = {
+            Home: focused ? 'home' : 'home-outline',
+            History: focused ? 'time' : 'time-outline',
+            Create: focused ? 'add-circle' : 'add-circle-outline',
+            Saved: focused ? 'bookmark' : 'bookmark-outline',
+            Menu: focused ? 'menu' : 'menu-outline',
+          };
+          return <Ionicons name={icons[route.name]} size={size} color={color} />;
+        },
+        tabBarStyle: { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff' },
+        tabBarActiveTintColor: theme === 'dark' ? '#81b0ff' : 'blue',
+        tabBarInactiveTintColor: theme === 'dark' ? '#767577' : 'gray',
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }} />
+      <Tab.Screen name="History" component={HistoryStackNavigator} options={{ headerShown: false }} />
+      <Tab.Screen name="Create" component={CreateStackNavigator} options={{ headerShown: false }} />
+      <Tab.Screen name="Saved" component={SavedStackNavigator} options={{ headerShown: false }} />
+      <Tab.Screen name="Menu" component={MenuStackNavigator} options={{ headerShown: false }} />
+    </Tab.Navigator>
+  );
+};
 
 export default UserNavigator;

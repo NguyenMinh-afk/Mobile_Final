@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, SafeAreaView, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function SavedScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
+
+    loadTheme();
+
+    // Listen for theme changes in AsyncStorage
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
+
 
   const savedItems = [
     { id: '1', title: 'Food and Drink', category: 'Vocabulary', score: '16/20', date: '20/04/2025', level: 'Easy' },
@@ -37,19 +60,19 @@ export default function SavedScreen() {
     };
 
     return (
-      <TouchableOpacity style={styles.item}>
-        <View style={styles.itemContent}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.category}>Danh mục: {item.category}</Text>
-          <Text style={styles.date}>{item.date} {item.level}</Text>
+      <TouchableOpacity style={[styles.item, theme === 'dark' && styles.darkItem]}>
+      <View style={styles.itemContent}>
+        <Text style={[styles.title, theme === 'dark' && styles.darkText]}>{item.title}</Text>
+        <Text style={[styles.category, theme === 'dark' && styles.darkText]}>Danh mục: {item.category}</Text>
+        <Text style={[styles.date, theme === 'dark' && styles.darkText]}>{item.date} {item.level}</Text>
+      </View>
+      <View style={styles.itemActions}>
+        <View style={[styles.scoreBadge, theme === 'dark' && styles.darkScoreBadge]}>
+          <Text style={[styles.score, theme === 'dark' && styles.darkText]}>{item.score}</Text>
         </View>
-        <View style={styles.itemActions}>
-          <View style={styles.scoreBadge}>
-            <Text style={styles.score}>{item.score}</Text>
-          </View>
-          <Ionicons name="bookmark" size={20} color="#000" style={styles.icon} />
-          <TouchableOpacity onPress={toggleMenu}>
-            <Ionicons name="ellipsis-horizontal" size={20} color="#000" style={styles.icon} />
+        <Ionicons name="bookmark" size={20} color={theme === 'dark' ? '#f4f3f4' : '#000'} style={styles.icon} />
+        <TouchableOpacity>
+          <Ionicons name="ellipsis-horizontal" size={20} color={theme === 'dark' ? '#f4f3f4' : '#000'} style={styles.icon} />
           </TouchableOpacity>
         </View>
 
@@ -80,18 +103,18 @@ export default function SavedScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
       <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={18} color="#888" style={styles.searchIcon} />
+        <View style={[styles.searchContainer, theme === 'dark' && styles.darkSearchContainer]}>
+          <Ionicons name="search" size={18} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, theme === 'dark' && styles.darkText]}
             placeholder="Tìm kiếm"
-            placeholderTextColor="#888"
+            placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          <Ionicons name="filter" size={18} color="#888" style={styles.filterIcon} />
+          <Ionicons name="filter" size={18} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.filterIcon} />
         </View>
         <FlatList
           data={filteredItems}
@@ -100,8 +123,9 @@ export default function SavedScreen() {
           contentContainerStyle={styles.list}
         />
       </View>
-      <StatusBar style="auto" />
+      <StatusBar style={theme === 'dark' ? 'light' : 'auto'} />
     </SafeAreaView>
+
   );
 }
 
@@ -231,4 +255,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkSearchContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+  darkItem: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkScoreBadge: {
+    backgroundColor: '#3a3a3a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+
 });

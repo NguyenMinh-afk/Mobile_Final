@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LanguageScreen() {
   const currentLanguages = ['Tiếng Việt', 'Tiếng Anh'];
   const moreLanguages = ['Tiếng Nhật', 'Tiếng Pháp', 'Tiếng Ý', 'Tiếng Hàn', 'Tiếng Trung'];
   const [selectedLanguages, setSelectedLanguages] = useState(['Tiếng Việt']); // Khởi tạo với ngôn ngữ mặc định
+  const [theme, setTheme] = useState('light'); // Khởi tạo theme mặc định
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
 
   const toggleLanguage = (language) => {
     setSelectedLanguages(prev =>
@@ -26,21 +46,22 @@ export default function LanguageScreen() {
       style={[
         styles.languageItem,
         selectedLanguages.includes(item) && styles.selectedLanguageItem,
+        theme === 'dark' && styles.darkLanguageItem,
       ]}
       onPress={() => toggleLanguage(item)}
     >
-      <Text style={styles.languageText}>{item}</Text>
+      <Text style={[styles.languageText, theme === 'dark' && styles.darkText]}>{item}</Text>
       {selectedLanguages.includes(item) && (
-        <Ionicons name="checkmark" size={18} color="#fff" style={styles.checkmark} />
+        <Ionicons name="checkmark" size={18} color={theme === 'dark' ? '#6A5AE0' : '#fff'} style={styles.checkmark} />
       )}
     </TouchableOpacity>
   );
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
 
-        <Text style={styles.subtitle}>Ngôn ngữ hiện tại:</Text>
+  return (
+    <SafeAreaView  style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+    <View style={styles.container}>
+      <Text style={[styles.subtitle, theme === 'dark' && styles.darkText]}>Ngôn ngữ hiện tại:</Text>
         <FlatList
           data={currentLanguages}
           renderItem={renderLanguageItem}
@@ -48,7 +69,8 @@ export default function LanguageScreen() {
           style={styles.list}
         />
 
-        <Text style={styles.subtitle}>Thêm ngôn ngữ:</Text>
+        <Text style={[styles.subtitle, theme === 'dark' && styles.darkText]}>Thêm ngôn ngữ:</Text>
+
         <FlatList
           data={moreLanguages}
           renderItem={renderLanguageItem}
@@ -56,8 +78,8 @@ export default function LanguageScreen() {
           style={styles.list}
         />
 
-        <TouchableOpacity style={styles.saveButton} onPress={saveLanguages}>
-          <Text style={styles.saveText}>LƯU THAY ĐỔI</Text>
+        <TouchableOpacity style={[styles.saveButton, theme === 'dark' && styles.darkSaveButton]} onPress={() => alert('Ngôn ngữ đã được lưu!')}>
+          <Text style={[styles.saveText, theme === 'dark' && styles.darkText]}>LƯU THAY ĐỔI</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -69,16 +91,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F7FB',
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
   container: {
     padding: 20,
     flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 20,
   },
   subtitle: {
     fontSize: 18,
@@ -87,8 +105,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  list: {
-    marginBottom: 20,
+  darkText: {
+    color: '#f4f3f4',
   },
   languageItem: {
     flexDirection: 'row',
@@ -104,15 +122,11 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  darkLanguageItem: {
+    backgroundColor: '#2a2a2a',
+  },
   selectedLanguageItem: {
     backgroundColor: '#007AFF',
-  },
-  languageText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  checkmark: {
-    marginLeft: 10,
   },
   saveButton: {
     backgroundColor: '#007AFF',
@@ -125,9 +139,15 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
+  darkSaveButton: {
+    backgroundColor: '#444',
+  },
   saveText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  checkmark: {
+    marginLeft: 10,
   },
 });

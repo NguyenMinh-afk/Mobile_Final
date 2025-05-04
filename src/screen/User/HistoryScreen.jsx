@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ExerciseItem from '../../components/Users/Items/ExerciseItem';
 import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const HistoryScreen = () => {
+  const [theme, setTheme] = useState('light');
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light');
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('done');
   const [searchText, setSearchText] = useState('');
@@ -163,31 +181,41 @@ const HistoryScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+      <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
         {/* Tab Bar */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity onPress={() => setActiveTab('done')} style={[styles.tab, activeTab === 'done' && styles.activeTab]}>
-            <Text style={[styles.tabText, activeTab === 'done' && styles.activeTabText]}>Lịch sử làm</Text>
+        <View style={[styles.tabContainer, theme === 'dark' && styles.darkTabContainer]}>
+          <TouchableOpacity onPress={() => setActiveTab('done')} 
+            style={[styles.tab, activeTab === 'done' && styles.activeTab, theme === 'dark' && activeTab === 'done' && styles.darkActiveTab]}>
+            <Text style={[styles.tabText, activeTab === 'done' && styles.activeTabText, theme === 'dark' && styles.darkTabText]}>
+              Lịch sử làm
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setActiveTab('created')} style={[styles.tab, activeTab === 'created' && styles.activeTab]}>
-            <Text style={[styles.tabText, activeTab === 'created' && styles.activeTabText]}>Lịch sử tạo</Text>
+          <TouchableOpacity onPress={() => setActiveTab('created')} 
+            style={[styles.tab, activeTab === 'created' && styles.activeTab, theme === 'dark' && activeTab === 'created' && styles.darkActiveTab]}>
+            <Text style={[styles.tabText, activeTab === 'created' && styles.activeTabText, theme === 'dark' && styles.darkTabText]}>
+              Lịch sử tạo
+            </Text>
           </TouchableOpacity>
         </View>
 
+
+
         {/* Search */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color="gray" style={styles.searchIcon} />
+        <View style={[styles.searchContainer, theme === 'dark' && styles.darkSearchContainer]}>
+          <Ionicons name="search-outline" size={20} color={theme === 'dark' ? '#bbb' : 'gray'} style={styles.searchIcon} />
           <TextInput
             placeholder="Tìm kiếm"
-            style={styles.searchInput}
+            style={[styles.searchInput, theme === 'dark' && styles.darkText]}
             value={searchText}
             onChangeText={setSearchText}
+            placeholderTextColor={theme === 'dark' ? '#777' : 'gray'}
           />
           <TouchableOpacity style={styles.filterButton} onPress={() => console.log('Filter pressed')}>
-            <Ionicons name="filter-outline" size={24} color="black" />
+            <Ionicons name="filter-outline" size={24} color={theme === 'dark' ? '#bbb' : 'black'} />
           </TouchableOpacity>
         </View>
+
 
         {/* List */}
         <FlatList
@@ -258,6 +286,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 10,
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkTabContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkTabText: {
+    color: '#f4f3f4',
+  },
+  darkActiveTab: {
+    borderBottomColor: '#007BFF',
+  },
+  darkSearchContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+
 });
 
 export default HistoryScreen;

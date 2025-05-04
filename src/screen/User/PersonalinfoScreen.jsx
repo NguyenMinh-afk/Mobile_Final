@@ -10,8 +10,26 @@ export default function PersonalInfoScreen() {
   const [facebookConnect, setFacebookConnect] = useState(false);
   const [googleConnect, setGoogleConnect] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-
+  const [theme, setTheme] = useState('light');
   // Tải dữ liệu từ AsyncStorage khi màn hình được mở
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); 
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -57,64 +75,68 @@ export default function PersonalInfoScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
       <ScrollView contentContainerStyle={styles.container}>
-
-        <View style={styles.formContainer}>
-          <TouchableOpacity style={styles.fileButton} onPress={handleChooseFile}>
-            <Ionicons name="image-outline" size={20} color="#007AFF" style={styles.fileIcon} />
-            <Text style={styles.fileButtonText}>CHỌN TỆP</Text>
+        <View style={[styles.formContainer, theme === 'dark' && styles.darkFormContainer]}>
+          <TouchableOpacity style={[styles.fileButton, theme === 'dark' && styles.darkFileButton]}>
+            <Ionicons name="image-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#007AFF'} style={styles.fileIcon} />
+            <Text style={[styles.fileButtonText, theme === 'dark' && styles.darkText]}>CHỌN TỆP</Text>
           </TouchableOpacity>
-          <Text style={styles.fileHint}>
+
+          <Text style={[styles.fileHint, theme === 'dark' && styles.darkText]}>
             {selectedFile ? `Đã chọn: ${selectedFile}` : 'Chưa chọn tệp'} {"\n"}
             Kích thước tối đa hình ảnh: 1 MB
           </Text>
 
-          <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={20} color="#888" style={styles.inputIcon} />
+
+          <View style={[styles.inputContainer, theme === 'dark' && styles.darkInputContainer]}>
+            <Ionicons name="person-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.inputIcon} />
             <TextInput
               placeholder="Họ và tên"
-              style={styles.input}
-              placeholderTextColor="#888"
+              style={[styles.input, theme === 'dark' && styles.darkText]}
+              placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
               value={name}
               onChangeText={setName}
             />
           </View>
-          <View style={styles.inputContainer}>
-            <Ionicons name="at-outline" size={20} color="#888" style={styles.inputIcon} />
+
+          <View style={[styles.inputContainer, theme === 'dark' && styles.darkInputContainer]}>
+            <Ionicons name="at-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.inputIcon} />
             <TextInput
               placeholder="Tên người dùng"
-              style={styles.input}
-              placeholderTextColor="#888"
+              style={[styles.input, theme === 'dark' && styles.darkText]}
+              placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
               value={username}
               onChangeText={setUsername}
             />
           </View>
-          <View style={styles.inputContainer}>
-            <Ionicons name="mail-outline" size={20} color="#888" style={styles.inputIcon} />
+
+          <View style={[styles.inputContainer, theme === 'dark' && styles.darkInputContainer]}>
+            <Ionicons name="mail-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#888'} style={styles.inputIcon} />
             <TextInput
               placeholder="Email"
-              style={styles.input}
-              placeholderTextColor="#888"
+              style={[styles.input, theme === 'dark' && styles.darkText]}
+              placeholderTextColor={theme === 'dark' ? '#bbb' : '#888'}
               value={email}
               onChangeText={setEmail}
             />
           </View>
 
-          <View style={styles.switchRow}>
-            <Text style={styles.switchLabel}>Kết nối Facebook</Text>
+          <View style={[styles.switchRow, theme === 'dark' && styles.darkSwitchRow]}>
+            <Text style={[styles.switchLabel, theme === 'dark' && styles.darkText]}>Kết nối Facebook</Text>
             <Switch
-              trackColor={{ false: '#ddd', true: '#007AFF' }}
-              thumbColor="#fff"
+              trackColor={{ false: theme === 'dark' ? '#555' : '#ddd', true: '#007AFF' }}
+              thumbColor={theme === 'dark' ? '#f4f3f4' : '#fff'}
               value={facebookConnect}
               onValueChange={setFacebookConnect}
             />
           </View>
-          <View style={styles.switchRow}>
-            <Text style={styles.switchLabel}>Kết nối Google</Text>
+
+          <View style={[styles.switchRow, theme === 'dark' && styles.darkSwitchRow]}>
+            <Text style={[styles.switchLabel, theme === 'dark' && styles.darkText]}>Kết nối Google</Text>
             <Switch
-              trackColor={{ false: '#ddd', true: '#007AFF' }}
-              thumbColor="#fff"
+              trackColor={{ false: theme === 'dark' ? '#555' : '#ddd', true: '#007AFF' }}
+              thumbColor={theme === 'dark' ? '#f4f3f4' : '#fff'}
               value={googleConnect}
               onValueChange={setGoogleConnect}
             />
@@ -262,5 +284,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkFormContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkFileButton: {
+    backgroundColor: '#3a3a3a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+  darkInputContainer: {
+    backgroundColor: '#2a2a2a',
+    borderColor: '#555',
+  },
+  darkSwitchRow: {
+    backgroundColor: '#2a2a2a',
   },
 });
