@@ -71,11 +71,7 @@ const QuizzersDetail = () => {
           <View>
             <Text style={styles.sectionTitle}>Mô tả:</Text>
             <Text style={styles.descriptionText}>
-              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. 
-              Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, 
-              bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, 
-              hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn 
-              ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
+            Mỗi bài kiểm tra nhỏ (Quizzers) là một bước tiến trong hành trình chữa lành và phát triển bản thân. Thông qua việc trả lời các câu hỏi tiếng Anh về sự phát triển cá nhân, bạn sẽ thực hành tư duy tích cực, nuôi dưỡng lòng biết ơn và khám phá những khía cạnh mới của chính mình. Các bài kiểm tra được thiết kế để vừa giúp bạn ôn luyện kiến thức, vừa khơi dậy sự kết nối với nội tâm, biến việc học thành một trải nghiệm đầy ý nghĩa và thú vị.
             </Text>
           </View>
         )}

@@ -71,11 +71,7 @@ const ReadingDetail = () => {
           <View>
             <Text style={styles.sectionTitle}>Mô tả:</Text>
             <Text style={styles.descriptionText}>
-              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. 
-              Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, 
-              bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, 
-              hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn 
-              ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
+            Hãy để từng trang sách tiếng Anh mở ra một hành trình tự khám phá và phát triển bản thân. Khi luyện tập đọc, bạn sẽ tiếp cận những câu chuyện về tư duy tích cực và sự chữa lành, giúp bạn không chỉ nâng cao khả năng đọc hiểu mà còn kết nối sâu sắc với cảm xúc của mình. Mỗi bài học là một cơ hội để bạn thực hành chánh niệm, hiểu thêm về bản thân và sử dụng tiếng Anh như một công cụ để khám phá những giá trị mới trong cuộc sống.
             </Text>
           </View>
         )}

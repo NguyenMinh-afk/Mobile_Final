@@ -2,65 +2,64 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-const quizData = [
-  {
-    id: '1',
-    question: 'What is the synonym of "happy"?',
-    options: ['Sad', 'Joyful', 'Angry', 'Tired'],
-    correctAnswer: 'Joyful',
-  },
-  {
-    id: '2',
-    question: 'Which word means the opposite of "big"?',
-    options: ['Large', 'Small', 'Huge', 'Giant'],
-    correctAnswer: 'Small',
-  },
-  {
-    id: '3',
-    question: 'What does "fast" mean?',
-    options: ['Slow', 'Quick', 'Heavy', 'Light'],
-    correctAnswer: 'Quick',
-  },
-];
+import quizData from '../../../utils/quizData.json'; // Load quiz JSON
 
 export default function DailyQuizDetail() {
   const navigation = useNavigation();
-  const [answers, setAnswers] = useState({}); // Lưu trữ đáp án người dùng chọn
+  const [answers, setAnswers] = useState({});
+  const [feedback, setFeedback] = useState(null); // Track correctness after submission
+  const [isSubmitted, setIsSubmitted] = useState(false); // Prevent further selection
 
   const handleSelectOption = (questionId, option) => {
-    setAnswers(prev => ({ ...prev, [questionId]: option }));
+    if (!isSubmitted) {
+      setAnswers(prev => ({ ...prev, [questionId]: option }));
+    }
   };
 
   const handleSubmit = () => {
     let score = 0;
+    let newFeedback = {};
+
     quizData.forEach(item => {
-      if (answers[item.id] === item.correctAnswer) {
+      newFeedback[item.id] = answers[item.id] === item.correctAnswer;
+      if (newFeedback[item.id]) {
         score++;
       }
     });
+
+    setFeedback(newFeedback); // Update feedback after submission
+    setIsSubmitted(true); // Prevent further interaction
+
     Alert.alert(
       'Kết quả',
       `Bạn đã trả lời đúng ${score}/${quizData.length} câu!`,
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
+      [{ text: 'OK', onPress: () => {} }] // No immediate navigation
     );
   };
 
   const renderQuestion = ({ item }) => (
     <View style={styles.questionContainer}>
       <Text style={styles.questionText}>{item.question}</Text>
-      {item.options.map((option, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.optionButton,
-            answers[item.id] === option && styles.selectedOption,
-          ]}
-          onPress={() => handleSelectOption(item.id, option)}
-        >
-          <Text style={styles.optionText}>{option}</Text>
-        </TouchableOpacity>
-      ))}
+      {item.options.map((option, index) => {
+        const isSelected = answers[item.id] === option;
+        const isCorrect = feedback && feedback[item.id] && option === item.correctAnswer;
+        const isIncorrect = feedback && !feedback[item.id] && isSelected;
+
+        return (
+          <TouchableOpacity
+            key={index}
+            disabled={isSubmitted} // Disable after submission
+            style={[
+              styles.optionButton,
+              isSelected && styles.selectedOption, // Default selection color
+              feedback && (isCorrect ? styles.correctAnswer : isIncorrect ? styles.wrongAnswer : null),
+            ]}
+            onPress={() => handleSelectOption(item.id, option)}
+          >
+            <Text style={styles.optionText}>{option}</Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 
@@ -79,13 +78,20 @@ export default function DailyQuizDetail() {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
       />
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitText}>Nộp bài</Text>
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={isSubmitted ? () => navigation.goBack() : handleSubmit}
+      >
+        <Text style={styles.submitText}>
+          {isSubmitted ? 'Trở về trang chủ' : 'Nộp bài'}
+        </Text>
       </TouchableOpacity>
+
     </SafeAreaView>
   );
 }
 
+// Using original styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -139,6 +145,14 @@ const styles = StyleSheet.create({
   selectedOption: {
     backgroundColor: '#e6f0ff',
     borderColor: '#007AFF',
+  },
+  correctAnswer: {
+    backgroundColor: 'green',
+    borderColor: 'darkgreen',
+  },
+  wrongAnswer: {
+    backgroundColor: 'red',
+    borderColor: 'darkred',
   },
   optionText: {
     fontSize: 16,

@@ -2,72 +2,66 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-const challengeData = [
-  {
-    id: '1',
-    question: 'Choose the correct form: "She ___ to school every day."',
-    options: ['go', 'goes', 'going', 'gone'],
-    correctAnswer: 'goes',
-  },
-  {
-    id: '2',
-    question: 'What is the past tense of "write"?',
-    options: ['Wrote', 'Writed', 'Writing', 'Writen'],
-    correctAnswer: 'Wrote',
-  },
-  {
-    id: '3',
-    question: 'Which sentence is correct?',
-    options: [
-      'I am go to the park.',
-      'I am going to the park.',
-      'I am goes to the park.',
-      'I am gone to the park.',
-    ],
-    correctAnswer: 'I am going to the park.',
-  },
-];
+import challengeData from '../../../utils/grammarChallenge.json'; // Load JSON
 
 export default function GrammarChallengeDetail() {
   const navigation = useNavigation();
-  const [answers, setAnswers] = useState({}); // Lưu trữ đáp án người dùng chọn
+  const [answers, setAnswers] = useState({});
+  const [feedback, setFeedback] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSelectOption = (questionId, option) => {
-    setAnswers(prev => ({ ...prev, [questionId]: option }));
+    if (!isSubmitted) {
+      setAnswers(prev => ({ ...prev, [questionId]: option }));
+    }
   };
 
   const handleSubmit = () => {
     let score = 0;
+    let newFeedback = {};
+
     challengeData.forEach(item => {
-      if (answers[item.id] === item.correctAnswer) {
+      newFeedback[item.id] = answers[item.id] === item.correctAnswer;
+      if (newFeedback[item.id]) {
         score++;
       }
     });
+
+    setFeedback(newFeedback);
+    setIsSubmitted(true);
+
     Alert.alert(
       'Kết quả',
       `Bạn đã trả lời đúng ${score}/${challengeData.length} câu!`,
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
+      [{ text: 'OK', onPress: () => {} }]
     );
   };
 
   const renderQuestion = ({ item }) => (
-    <View style={styles.questionContainer}>
-      <Text style={styles.questionText}>{item.question}</Text>
-      {item.options.map((option, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.optionButton,
-            answers[item.id] === option && styles.selectedOption,
-          ]}
-          onPress={() => handleSelectOption(item.id, option)}
-        >
-          <Text style={styles.optionText}>{option}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
+      <View style={styles.questionContainer}>
+        <Text style={styles.questionText}>{item.question}</Text>
+        {item.options.map((option, index) => {
+          const isSelected = answers[item.id] === option;
+          const isCorrect = feedback && feedback[item.id] && option === item.correctAnswer;
+          const isIncorrect = feedback && !feedback[item.id] && isSelected;
+  
+          return (
+            <TouchableOpacity
+              key={index}
+              disabled={isSubmitted} // Disable after submission
+              style={[
+                styles.optionButton,
+                isSelected && styles.selectedOption, // Default selection color
+                feedback && (isCorrect ? styles.correctAnswer : isIncorrect ? styles.wrongAnswer : null),
+              ]}
+              onPress={() => handleSelectOption(item.id, option)}
+            >
+              <Text style={styles.optionText}>{option}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -78,19 +72,15 @@ export default function GrammarChallengeDetail() {
         <Text style={styles.headerText}>Grammar Challenge</Text>
         <View style={styles.placeholder} />
       </View>
-      <FlatList
-        data={challengeData}
-        renderItem={renderQuestion}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
-      />
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitText}>Nộp bài</Text>
+      <FlatList data={challengeData} renderItem={renderQuestion} keyExtractor={item => item.id} contentContainerStyle={styles.list} />
+      <TouchableOpacity style={styles.submitButton} onPress={isSubmitted ? () => navigation.goBack() : handleSubmit}>
+        <Text style={styles.submitText}>{isSubmitted ? "Trở về trang chủ" : "Nộp bài"}</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
+// Using original styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -144,6 +134,14 @@ const styles = StyleSheet.create({
   selectedOption: {
     backgroundColor: '#e6f0ff',
     borderColor: '#007AFF',
+  },
+  correctAnswer: {
+    backgroundColor: 'green',
+    borderColor: 'darkgreen',
+  },
+  wrongAnswer: {
+    backgroundColor: 'red',
+    borderColor: 'darkred',
   },
   optionText: {
     fontSize: 16,

@@ -71,11 +71,7 @@ const WritingDetail = () => {
           <View>
             <Text style={styles.sectionTitle}>Mô tả:</Text>
             <Text style={styles.descriptionText}>
-              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. 
-              Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, 
-              bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, 
-              hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn 
-              ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
+            Mỗi nét chữ bạn viết là một bước đi trên hành trình chữa lành và khám phá chính mình. Thông qua việc luyện tập viết tiếng Anh, bạn sẽ ghi lại những suy nghĩ về sự phát triển cá nhân, từ đó nuôi dưỡng lòng biết ơn và sự kết nối với nội tâm. Các bài học sẽ giúp bạn tạo nên những đoạn văn đầy cảm hứng, vừa cải thiện kỹ năng viết, vừa mở ra những góc nhìn mới về bản thân, để mỗi câu chữ đều trở thành một phần của hành trình trưởng thành
             </Text>
           </View>
         )}

@@ -71,11 +71,7 @@ const ListeningDetail = () => {
           <View>
             <Text style={styles.sectionTitle}>Mô tả:</Text>
             <Text style={styles.descriptionText}>
-              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. 
-              Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, 
-              bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, 
-              hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn 
-              ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
+            Bằng cách lắng nghe những câu chuyện ý nghĩa về hành trình chữa lành và phát triển cá nhân, bạn sẽ từng bước cải thiện khả năng nghe tiếng Anh một cách tự nhiên. Mỗi bài học là một cơ hội để bạn thực hành chánh niệm, cảm nhận sâu sắc những thông điệp tích cực và kết nối với nội tâm của mình. Khi lắng nghe, bạn không chỉ học cách hiểu ngôn ngữ mà còn khám phá những giá trị mới, giúp bạn trưởng thành hơn trong cả tâm hồn lẫn kỹ năng nghe.
             </Text>
           </View>
         )}

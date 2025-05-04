@@ -71,11 +71,7 @@ const GrammarDetail = () => {
           <View>
             <Text style={styles.sectionTitle}>Mô tả:</Text>
             <Text style={styles.descriptionText}>
-              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. 
-              Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, 
-              bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, 
-              hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn 
-              ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
+            Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, bạn không chỉ nắm vững các quy tắc ngữ pháp liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách chính xác, tự nhiên và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách xây dựng câu đúng ngữ pháp, khám phá những khía cạnh mới trong cách diễn đạt ý tưởng và ứng dụng ngữ pháp vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
             </Text>
           </View>
         )}
