@@ -12,7 +12,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cài đặt</Text>
 
       <View style={styles.settingsContainer}>
         <TouchableOpacity style={styles.settingRow}>

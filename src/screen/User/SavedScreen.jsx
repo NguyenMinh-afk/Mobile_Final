@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, SafeAreaView, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function SavedScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+
   const savedItems = [
     { id: '1', title: 'Food and Drink', category: 'Vocabulary', score: '16/20', date: '20/04/2025', level: 'Easy' },
     { id: '2', title: 'Travel and Tourism', category: 'Vocabulary', score: '20/25', date: '20/04/2025', level: 'Easy' },
@@ -18,22 +20,64 @@ export default function SavedScreen() {
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item}>
-      <View style={styles.itemContent}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.category}>Danh mục: {item.category}</Text>
-        <Text style={styles.date}>{item.date} {item.level}</Text>
-      </View>
-      <View style={styles.itemActions}>
-        <View style={styles.scoreBadge}>
-          <Text style={styles.score}>{item.score}</Text>
+  const renderItem = ({ item }) => {
+    const toggleMenu = () => {
+      setSelectedItemId(item.id);
+      setMenuVisible(true);
+    };
+
+    const handleView = () => {
+      console.log('Xem item:', item.title);
+      setMenuVisible(false);
+    };
+
+    const handleDelete = () => {
+      console.log('Xóa item:', item.title);
+      setMenuVisible(false);
+    };
+
+    return (
+      <TouchableOpacity style={styles.item}>
+        <View style={styles.itemContent}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.category}>Danh mục: {item.category}</Text>
+          <Text style={styles.date}>{item.date} {item.level}</Text>
         </View>
-        <Ionicons name="bookmark" size={20} color="#000" style={styles.icon} />
-        <Ionicons name="ellipsis-horizontal" size={20} color="#000" style={styles.icon} />
-      </View>
-    </TouchableOpacity>
-  );
+        <View style={styles.itemActions}>
+          <View style={styles.scoreBadge}>
+            <Text style={styles.score}>{item.score}</Text>
+          </View>
+          <Ionicons name="bookmark" size={20} color="#000" style={styles.icon} />
+          <TouchableOpacity onPress={toggleMenu}>
+            <Ionicons name="ellipsis-horizontal" size={20} color="#000" style={styles.icon} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Menu Xem/Xóa */}
+        <Modal
+          transparent={true}
+          visible={menuVisible && selectedItemId === item.id}
+          onRequestClose={() => setMenuVisible(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            onPress={() => setMenuVisible(false)}
+          >
+            <View style={styles.menuContainer}>
+              <TouchableOpacity style={styles.menuItem} onPress={handleView}>
+                <Ionicons name="eye-outline" size={20} color="#333" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Xem</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
+                <Ionicons name="trash-outline" size={20} color="#FF0000" style={styles.menuIcon} />
+                <Text style={[styles.menuText, { color: '#FF0000' }]}>Xóa</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -75,7 +119,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 16,
     marginVertical: 8,
-    marginTop: 20, // Tăng khoảng cách từ mép trên
+    marginTop: 20,
     borderRadius: 12,
     paddingHorizontal: 10,
     shadowColor: '#000',
@@ -154,5 +198,37 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: 120, // Điều chỉnh để menu xuất hiện gần biểu tượng ba chấm
+    right: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    width: 120,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  menuIcon: {
+    marginRight: 10,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#333',
   },
 });

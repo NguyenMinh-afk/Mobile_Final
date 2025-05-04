@@ -1,8 +1,24 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
 
 const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
+
+  const handleView = () => {
+    console.log('Xem');
+    setMenuVisible(false);
+  };
+
+  const handleDelete = () => {
+    console.log('Xóa');
+    setMenuVisible(false);
+  };
+
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image source={{ uri: item.image }} style={styles.image} />
@@ -18,7 +34,7 @@ const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
           </View>
         </View>
       </View>
-      
+
       {/* Hiển thị tổng số câu hỏi */}
       {item.totalQuestions && (
         <View style={styles.questionTag}>
@@ -35,10 +51,33 @@ const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
         />
       </TouchableOpacity>
 
-      {/* Biểu tượng ba chấm */}
-      <TouchableOpacity style={styles.moreButton} onPress={() => console.log('More options')}>
+      {/* Biểu tượng ba chấm và menu */}
+      <TouchableOpacity style={styles.moreButton} onPress={toggleMenu}>
         <Ionicons name="ellipsis-vertical" size={20} color="black" />
       </TouchableOpacity>
+
+      {/* Menu Xem/Xóa */}
+      <Modal
+        transparent={true}
+        visible={menuVisible}
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          onPress={() => setMenuVisible(false)}
+        >
+          <View style={styles.menuContainer}>
+            <TouchableOpacity style={styles.menuItem} onPress={handleView}>
+              <Ionicons name="eye-outline" size={20} color="#333" style={styles.menuIcon} />
+              <Text style={styles.menuText}>Xem</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={20} color="#FF0000" style={styles.menuIcon} />
+              <Text style={[styles.menuText, { color: '#FF0000' }]}>Xóa</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       {item.score && (
         <View style={styles.scoreContainer}>
@@ -140,6 +179,38 @@ const styles = StyleSheet.create({
     top: 50,
     right: 10,
     transform: [{ rotate: '90deg' }],
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: 150, // Điều chỉnh để menu xuất hiện gần biểu tượng ba chấm
+    right: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    width: 120,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  menuIcon: {
+    marginRight: 10,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 
