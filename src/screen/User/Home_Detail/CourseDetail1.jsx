@@ -1,40 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CourseDetail1 = () => {
   const navigation = useNavigation();
+  const [theme, setTheme] = useState('light');
 
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); 
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+      <ScrollView contentContainerStyle={[styles.container, theme === 'dark' && styles.darkContainer]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header]}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
+            <Ionicons name="arrow-back" size={24} color={theme === 'dark' ? '#fff' : '#000'} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Khóa học Beginner English</Text>
+          <Text style={[styles.headerTitle, theme === 'dark' && styles.darkText]}>Khóa học Beginner English</Text>
         </View>
 
         {/* Course Info */}
-        <View style={styles.courseInfo}>
-          <Text style={styles.courseTitle}>Khóa học Beginner English</Text>
-          <Text style={styles.courseDescription}>
-            Khóa học này dành cho người mới bắt đầu, tập trung vào từ vựng cơ bản, ngữ pháp, và kỹ năng giao tiếp hàng ngày. Phù hợp với người muốn xây dựng nền tảng tiếng Anh vững chắc.
+        <View style={[styles.courseInfo, theme === 'dark' && styles.darkCourseInfo]}>
+          <Text style={[styles.courseTitle, theme === 'dark' && styles.darkText]}>Khóa học Beginner English</Text>
+      <Text style={[styles.courseDescription, theme === 'dark' && styles.darkText]}>
+        Khóa học này dành cho người mới bắt đầu, tập trung vào từ vựng cơ bản, ngữ pháp, và kỹ năng giao tiếp hàng ngày. Phù hợp với người muốn xây dựng nền tảng tiếng Anh vững chắc.
           </Text>
           <View style={styles.courseDetails}>
             <View style={styles.detailItem}>
               <Ionicons name="time-outline" size={18} color="#6A5AE0" />
-              <Text style={styles.detailText}>Thời lượng: 10 tuần</Text>
+              <Text style={[styles.detailText,theme === 'dark' && styles.darkText]}>Thời lượng: 10 tuần</Text>
             </View>
             <View style={styles.detailItem}>
               <Ionicons name="bar-chart-outline" size={18} color="#6A5AE0" />
-              <Text style={styles.detailText}>Cấp độ: Sơ cấp</Text>
+              <Text style={[styles.detailText,theme === 'dark' && styles.darkText]}>Cấp độ: Sơ cấp</Text>
             </View>
             <View style={styles.detailItem}>
               <Ionicons name="people-outline" size={18} color="#6A5AE0" />
-              <Text style={styles.detailText}>Số lượng bài học: 30</Text>
+              <Text style={[styles.detailText,theme === 'dark' && styles.darkText]}>Số lượng bài học: 30</Text>
             </View>
           </View>
         </View>
@@ -131,6 +150,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkHeader: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkCourseInfo: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+
 });
 
 export default CourseDetail1;

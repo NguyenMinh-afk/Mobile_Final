@@ -23,18 +23,14 @@ export default function HomeScreen() {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
-  }, [theme]);
+  
+    // Listen for updates when navigating back or theme changes
+    const unsubscribe = navigation.addListener('focus', loadTheme);
+  
+    return () => unsubscribe(); // Cleanup listener
+  }, [navigation]);
   const insights = [
     { emoji: '📘', title: 'Vocabulary', sub: 'Start Learning', navigateTo: 'VocabularyDetail' },
     { emoji: '✏️', title: 'Grammar', sub: 'Practice Grammar', navigateTo: 'GrammarDetail' },

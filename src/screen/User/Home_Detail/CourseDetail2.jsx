@@ -1,40 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const CourseDetail2 = () => {
   const navigation = useNavigation();
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); 
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Khóa học Advanced Business English</Text>
+    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
+          <ScrollView contentContainerStyle={[styles.container, theme === 'dark' && styles.darkContainer]}>
+            {/* Header */}
+            <View style={[styles.header]}>
+              <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color={theme === 'dark' ? '#fff' : '#000'} />
+              </TouchableOpacity>
+              <Text style={[styles.headerTitle, theme === 'dark' && styles.darkText]}>Khóa học Advanced Business English</Text>
         </View>
 
         {/* Course Info */}
-        <View style={styles.courseInfo}>
-          <Text style={styles.courseTitle}>Khóa học Advanced Business English</Text>
+        <View style={[styles.courseInfo, theme === 'dark' && styles.darkCourseInfo]}>
+        <Text style={[styles.courseTitle, theme === 'dark' && styles.darkText]}>Khóa học Advanced Business English</Text>
           <Text style={styles.courseDescription}>
             Khóa học này dành cho người học nâng cao, tập trung vào tiếng Anh thương mại, kỹ năng đàm phán, viết email chuyên nghiệp, và giao tiếp trong môi trường kinh doanh quốc tế.
           </Text>
           <View style={styles.courseDetails}>
             <View style={styles.detailItem}>
               <Ionicons name="time-outline" size={18} color="#6A5AE0" />
-              <Text style={styles.detailText}>Thời lượng: 12 tuần</Text>
+              <Text style={[styles.detailText,theme === 'dark' && styles.darkText]}>Thời lượng: 12 tuần</Text>
             </View>
             <View style={styles.detailItem}>
               <Ionicons name="bar-chart-outline" size={18} color="#6A5AE0" />
-              <Text style={styles.detailText}>Cấp độ: Nâng cao</Text>
+              <Text style={[styles.detailText,theme === 'dark' && styles.darkText]}>Cấp độ: Nâng cao</Text>
             </View>
             <View style={styles.detailItem}>
               <Ionicons name="people-outline" size={18} color="#6A5AE0" />
-              <Text style={styles.detailText}>Số lượng bài học: 40</Text>
+              <Text style={[styles.detailText,theme === 'dark' && styles.darkText]}>Số lượng bài học: 40</Text>
             </View>
           </View>
         </View>
@@ -131,6 +151,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  darkSafeArea: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+  darkHeader: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkCourseInfo: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+
 });
 
 export default CourseDetail2;

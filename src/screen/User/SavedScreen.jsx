@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, SafeArea
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
 
 
 export default function SavedScreen() {
@@ -10,25 +12,20 @@ export default function SavedScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [theme, setTheme] = useState('light');
-
+  const navigation = useNavigation();
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    // Listen for theme changes in AsyncStorage
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
-  }, [theme]);
+  
+    // Listen for updates when navigating back or theme changes
+    const unsubscribe = navigation.addListener('focus', loadTheme);
+  
+    return () => unsubscribe(); // Cleanup listener
+  }, [navigation]);
 
 
   const savedItems = [

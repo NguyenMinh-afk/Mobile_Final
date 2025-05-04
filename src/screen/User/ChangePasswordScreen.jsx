@@ -11,19 +11,14 @@ export default function ChangePasswordScreen() {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    // Listen for theme changes
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
-  }, [theme]);
+  
+    // Listen for updates when navigating back or theme changes
+    const unsubscribe = navigation.addListener('focus', loadTheme);
+  
+    return () => unsubscribe(); // Cleanup listener
+  }, [navigation]);
 
   return (
     <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>

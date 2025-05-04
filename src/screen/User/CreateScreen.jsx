@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
 
 const CreateScreen = () => {
   const [theme, setTheme] = useState('light');
@@ -10,24 +12,20 @@ const CreateScreen = () => {
   const [accountType, setAccountType] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [questionContent, setQuestionContent] = useState('');
-
+  const navigation = useNavigation();
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    const themeListener = setInterval(async () => {
-      const newTheme = await AsyncStorage.getItem('theme');
-      if (newTheme !== theme) {
-        setTheme(newTheme);
-      }
-    }, 500);
-
-    return () => clearInterval(themeListener);
-  }, [theme]);
+  
+    // Listen for updates when navigating back or theme changes
+    const unsubscribe = navigation.addListener('focus', loadTheme);
+  
+    return () => unsubscribe(); // Cleanup listener
+  }, [navigation]);
   return (
     <ScrollView contentContainerStyle={[styles.container, theme === 'dark' && styles.darkContainer]}>
       {/* Upload Image */}

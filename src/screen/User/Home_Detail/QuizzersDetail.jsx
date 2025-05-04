@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -10,68 +11,77 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const QuizzersDetail = () => {
+const ReadingDetail = () => {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const savedTheme = await AsyncStorage.getItem('theme');
+      setTheme(savedTheme || 'light'); 
+    };
+
+    loadTheme();
+
+    const themeListener = setInterval(async () => {
+      const newTheme = await AsyncStorage.getItem('theme');
+      if (newTheme !== theme) {
+        setTheme(newTheme);
+      }
+    }, 500);
+
+    return () => clearInterval(themeListener);
+  }, [theme]);
   const [activeTab, setActiveTab] = useState('intro');
   const navigation = useNavigation();
 
   const lessons = [
-    { id: '1', title: 'Quizzers Lesson 1: Self-Discovery' },
-    { id: '2', title: 'Quizzers Lesson 2: Mindfulness in Words' },
-    { id: '3', title: 'Quizzers Lesson 3: The Power of Gratitude' },
-    { id: '4', title: 'Quizzers Lesson 4: Inner Growth' },
-    { id: '5', title: 'Quizzers Lesson 5: Positive Thinking' },
-    { id: '6', title: 'Quizzers Lesson 6: Embracing Change' },
+    { id: '1', title: 'Reading Lesson 1: Self-Discovery' },
+    { id: '2', title: 'Reading Lesson 2: Mindfulness in Words' },
+    { id: '3', title: 'Reading Lesson 3: The Power of Gratitude' },
+    { id: '4', title: 'Reading Lesson 4: Inner Growth' },
+    { id: '5', title: 'Reading Lesson 5: Positive Thinking' },
+    { id: '6', title: 'Reading Lesson 6: Embracing Change' },
   ];
 
   return (
-    <View style={styles.container}>
-      {/* Background Header */}
+    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       <ImageBackground
         source={require('../../../assets/User/Quizzers_bg.png')}
-        style={styles.headerImage}
+        style={styles.headerImage} // No theme-based darkening
       >
         <View style={styles.headerIcons}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="ellipsis-vertical" size={24} color="black" />
+            <Ionicons name="arrow-back" size={24} color={theme === 'dark' ? '#fff' : 'black'} />
           </TouchableOpacity>
         </View>
       </ImageBackground>
 
+
       {/* Tab selector */}
-      <View style={styles.tabWrapper}>
-        <View style={styles.tabContainer}>
+      <View style={[styles.tabWrapper, theme === 'dark' && styles.darkTabWrapper]}>
+        <View style={[styles.tabContainer, theme === 'dark' && styles.darkTabContainer]}>
           {['intro', 'lesson', 'post'].map((tab) => (
             <TouchableOpacity
               key={tab}
               onPress={() => setActiveTab(tab)}
-              style={[
-                styles.tab,
-                activeTab === tab && styles.activeTab,
-              ]}
+              style={[styles.tab, activeTab === tab && styles.activeTab, theme === 'dark' && styles.darkTab]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab && styles.activeTabText,
-                ]}
-              >
+              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText, theme === 'dark' && styles.darkText]}>
                 {tab === 'intro' ? 'Giới thiệu' : tab === 'lesson' ? 'Bài học' : 'Bài đăng'}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
+          
       </View>
 
       {/* Tab Content */}
       <View style={styles.content}>
         {activeTab === 'intro' && (
           <View>
-            <Text style={styles.sectionTitle}>Mô tả:</Text>
-            <Text style={styles.descriptionText}>
-            Mỗi bài kiểm tra nhỏ (Quizzers) là một bước tiến trong hành trình chữa lành và phát triển bản thân. Thông qua việc trả lời các câu hỏi tiếng Anh về sự phát triển cá nhân, bạn sẽ thực hành tư duy tích cực, nuôi dưỡng lòng biết ơn và khám phá những khía cạnh mới của chính mình. Các bài kiểm tra được thiết kế để vừa giúp bạn ôn luyện kiến thức, vừa khơi dậy sự kết nối với nội tâm, biến việc học thành một trải nghiệm đầy ý nghĩa và thú vị.
+            <Text style={[styles.sectionTitle,theme === 'dark' && styles.darkText]}>Mô tả:</Text>
+            <Text style={[styles.descriptionText, theme === 'dark' && styles.darkText]}>  
+            Hãy để từng trang sách tiếng Anh mở ra một hành trình tự khám phá và phát triển bản thân. Khi luyện tập đọc, bạn sẽ tiếp cận những câu chuyện về tư duy tích cực và sự chữa lành, giúp bạn không chỉ nâng cao khả năng đọc hiểu mà còn kết nối sâu sắc với cảm xúc của mình. Mỗi bài học là một cơ hội để bạn thực hành chánh niệm, hiểu thêm về bản thân và sử dụng tiếng Anh như một công cụ để khám phá những giá trị mới trong cuộc sống.
             </Text>
           </View>
         )}
@@ -82,7 +92,7 @@ const QuizzersDetail = () => {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View style={styles.lessonItem}>
-                <Text style={styles.lessonText}>{item.title}</Text>
+                <Text style={[styles.lessonText,theme === 'dark' && styles.darkText]}>{item.title}</Text>
               </View>
             )}
             ListFooterComponent={
@@ -101,12 +111,12 @@ const QuizzersDetail = () => {
       </View>
 
       {/* Footer Buttons */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="share-social-outline" size={24} color="black" />
+      <View style={[styles.footer, theme === 'dark' && styles.darkFooter]}>
+        <TouchableOpacity style={[styles.iconButton, theme === 'dark' && styles.darkIconButton]}>
+          <Ionicons name="share-social-outline" size={24} color={theme === 'dark' ? '#fff' : 'black'} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionText}>Học ngay</Text>
+        <TouchableOpacity style={[styles.actionButton, theme === 'dark' && styles.darkActionButton]}>
+          <Text style={[styles.actionText, theme === 'dark' && styles.darkText]}>Học ngay</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -225,6 +235,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
+  darkContainer: {
+    backgroundColor: '#1c1c1c',
+  },
+
+  darkTabContainer: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkTab: {
+    backgroundColor: '#3a3a3a',
+  },
+  darkText: {
+    color: '#f4f3f4',
+  },
+  darkFooter: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkIconButton: {
+    borderColor: '#fff',
+  },
+  darkActionButton: {
+    backgroundColor: '#444',
+    borderColor: '#fff',
+  },
+
 });
 
-export default QuizzersDetail;
+export default ReadingDetail;
