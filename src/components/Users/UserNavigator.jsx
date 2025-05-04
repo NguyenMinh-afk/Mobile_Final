@@ -157,21 +157,11 @@ const UserNavigator = () => {
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); // Default to light if no theme saved
+      setTheme(savedTheme || 'light');
     };
-
+  
     loadTheme();
-
-    // Listen for theme changes in AsyncStorage
-      const themeListener = setInterval(async () => {
-        const newTheme = await AsyncStorage.getItem('theme');
-        if (newTheme !== theme) {
-          setTheme(newTheme);
-        }
-      }, 500); // Check every 500ms for updates
-
-      return () => clearInterval(themeListener); // Cleanup listener
-    }, [theme]);
+  }, []);
 
   // Prevent UI flicker while loading theme
 
