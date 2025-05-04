@@ -1,90 +1,107 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Or react-native-vector-icons
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const SubscriptionScreen = () => {
-    const [selectedPlan, setSelectedPlan] = useState('monthly');
-    const navigation = useNavigation();
+  const [selectedPlan, setSelectedPlan] = useState('monthly');
+  const navigation = useNavigation();
+
+  const handleUpdatePlan = () => {
+    // Điều hướng đến PaymentScreen và truyền selectedPlan
+    navigation.navigate('Payment', { selectedPlan });
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Subscription</Text>
+        </View>
+
+        {/* Illustration */}
+        <View style={styles.imageContainer}>
+          <Ionicons name="card-outline" size={100} color="#6A5AE0" />
+        </View>
+
+        {/* Title */}
+        <Text style={styles.mainTitle}>Vui lòng chọn gói đăng ký để tiếp tục</Text>
+
+        {/* Description */}
+        <View style={styles.features}>
+          <View style={styles.featureItem}>
+            <Ionicons name="checkmark-circle" size={20} color="#6A5AE0" />
+            <Text style={styles.featureText}>
+              Hàng trăm bài học từ cơ bản đến nâng cao.
+            </Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Ionicons name="checkmark-circle" size={20} color="#6A5AE0" />
+            <Text style={styles.featureText}>
+              Học văn hóa, du lịch và kinh doanh qua các khóa học đặc biệt.
+            </Text>
+          </View>
+        </View>
+
+        {/* Plans */}
+        <TouchableOpacity
+          style={[styles.planContainer, selectedPlan === 'monthly' && styles.selectedPlan]}
+          onPress={() => setSelectedPlan('monthly')}
+        >
+          <View style={styles.planDetails}>
+            <Text style={styles.planTitle}>Gói hàng tháng</Text>
+            <Text style={styles.planPrice}>$12.12/Tháng</Text>
+            <Text style={styles.planSub}>Sau đó $124.12/tháng, hủy bất cứ lúc nào</Text>
+          </View>
+          <View style={styles.trialBadge}>
+            <Text style={styles.trialText}>Thử miễn phí 1 tuần</Text>
+          </View>
+          {selectedPlan === 'monthly' && (
+            <Ionicons name="checkmark" size={24} color="#fff" style={styles.checkmark} />
+          )}
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Subscription</Text>
-      </View>
 
-      {/* Illustration */}
-      <Image
-        source={{ uri: 'https://via.placeholder.com/100' }}
-        style={styles.image}
-      />
+        <TouchableOpacity
+          style={[styles.planContainer, selectedPlan === 'annually' && styles.selectedPlan]}
+          onPress={() => setSelectedPlan('annually')}
+        >
+          <View style={styles.planDetails}>
+            <Text style={styles.planTitle}>Gói hàng năm</Text>
+            <Text style={styles.planPrice}>$124.12/Tháng</Text>
+            <Text style={styles.planSub}>Sau đó $124.12/tháng, hủy bất cứ lúc nào</Text>
+          </View>
+          <View style={styles.trialBadge}>
+            <Text style={styles.trialText}>Thử miễn phí 1 tuần</Text>
+          </View>
+          {selectedPlan === 'annually' && (
+            <Ionicons name="checkmark" size={24} color="#fff" style={styles.checkmark} />
+          )}
+        </TouchableOpacity>
 
-      {/* Title */}
-      <Text style={styles.mainTitle}>To continue, please select a subscription</Text>
-
-      {/* Description */}
-      <View style={styles.features}>
-        <View style={styles.featureItem}>
-          <Ionicons name="checkmark-circle" size={20} color="#6A5AE0" />
-          <Text style={styles.featureText}>
-            There are hundreds of lessons from beginner to advanced.
-          </Text>
-        </View>
-        <View style={styles.featureItem}>
-          <Ionicons name="checkmark-circle" size={20} color="#6A5AE0" />
-          <Text style={styles.featureText}>
-            The study of culture, travel, and business through special courses
-          </Text>
-        </View>
-      </View>
-
-      {/* Plans */}
-      <TouchableOpacity
-        style={[styles.planContainer, selectedPlan === 'monthly' && styles.selectedPlan]}
-        onPress={() => setSelectedPlan('monthly')}
-      >
-        <View>
-          <Text style={styles.planTitle}>Monthly</Text>
-          <Text style={styles.planPrice}>$12.12/ Month</Text>
-          <Text style={styles.planSub}>then $124.12 per month cancel anytime</Text>
-        </View>
-        <View style={styles.trialBadge}>
-          <Text style={styles.trialText}>1 week free trial</Text>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.planContainer, selectedPlan === 'annually' && styles.selectedPlan]}
-        onPress={() => setSelectedPlan('annually')}
-      >
-        <View>
-          <Text style={styles.planTitle}>Annually</Text>
-          <Text style={styles.planPrice}>$124.12/ Month</Text>
-          <Text style={styles.planSub}>then $124.12 per month cancel anytime</Text>
-        </View>
-        <View style={styles.trialBadge}>
-          <Text style={styles.trialText}>1 week free trial</Text>
-        </View>
-      </TouchableOpacity>
-
-      {/* Update Button */}
-      <TouchableOpacity style={styles.updateButton}>
-        <Text style={styles.updateButtonText}>Update Plan</Text>
-      </TouchableOpacity>
-      
-    </ScrollView>
+        {/* Update Button */}
+        <TouchableOpacity style={styles.updateButton} onPress={handleUpdatePlan}>
+          <View style={styles.buttonContent}>
+            <Text style={styles.updateButtonText}>CẬP NHẬT GÓI</Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5F7FB',
+  },
   container: {
     paddingBottom: 40,
-    backgroundColor: '#fff',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   header: {
     width: '100%',
@@ -93,6 +110,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   backButton: {
     marginRight: 16,
@@ -102,85 +124,104 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  image: {
-    marginTop: 20,
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
+  imageContainer: {
+    marginTop: 30,
+    alignItems: 'center',
   },
   mainTitle: {
     marginTop: 20,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingHorizontal: 30,
-    color: '#000',
+    paddingHorizontal: 20,
+    color: '#333',
   },
   features: {
     marginTop: 20,
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   featureText: {
-    marginLeft: 8,
+    marginLeft: 10,
     color: '#555',
-    fontSize: 14,
+    fontSize: 15,
   },
   planContainer: {
     marginTop: 20,
-    width: '85%',
+    width: '100%',
     backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 15,
+    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   selectedPlan: {
-    backgroundColor: '#60A991',
+    borderWidth: 2,
+    borderColor: '#6A5AE0',
+    backgroundColor: '#e0eaff',
+  },
+  planDetails: {
+    flex: 1,
   },
   planTitle: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#000',
     fontWeight: '600',
   },
   planPrice: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginTop: 4,
-    color: '#000',
+    marginTop: 5,
+    color: '#333',
   },
   planSub: {
     fontSize: 12,
-    color: '#555',
+    color: '#777',
     marginTop: 2,
   },
   trialBadge: {
     backgroundColor: '#FF7A00',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
   trialText: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#fff',
     fontWeight: '600',
+  },
+  checkmark: {
+    marginLeft: 10,
   },
   updateButton: {
     marginTop: 30,
     width: '85%',
-    backgroundColor: '#6A5AE0',
-    paddingVertical: 14,
     borderRadius: 30,
+    overflow: 'hidden',
+    backgroundColor: '#6A5AE0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  buttonContent: {
+    paddingVertical: 15,
     alignItems: 'center',
   },
   updateButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

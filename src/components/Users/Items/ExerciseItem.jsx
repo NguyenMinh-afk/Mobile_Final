@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
 
-
-const ExerciseItem = ({ item, onPress }) => {
+const ExerciseItem = ({ item, onPress, onBookmarkPress, isSaved }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image source={{ uri: item.image }} style={styles.image} />
@@ -28,8 +27,12 @@ const ExerciseItem = ({ item, onPress }) => {
       )}
 
       {/* Biểu tượng dấu trang */}
-      <TouchableOpacity style={styles.bookmarkButton} onPress={() => console.log('Bookmark pressed')}>
-        <Ionicons name="bookmark-outline" size={20} color="black" />
+      <TouchableOpacity style={styles.bookmarkButton} onPress={onBookmarkPress}>
+        <Ionicons
+          name={isSaved ? 'bookmark' : 'bookmark-outline'}
+          size={20}
+          color={isSaved ? '#007BFF' : 'black'}
+        />
       </TouchableOpacity>
 
       {/* Biểu tượng ba chấm */}
@@ -45,9 +48,6 @@ const ExerciseItem = ({ item, onPress }) => {
     </TouchableOpacity>
   );
 };
-
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-
   questionTag: {
     backgroundColor: '#007BFF',
     borderRadius: 20,
@@ -131,20 +130,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
   },
-
   bookmarkButton: {
     position: 'absolute',
     top: 25,
-    right: 80, // Điều chỉnh vị trí bên phải
+    right: 80,
   },
   moreButton: {
     position: 'absolute',
     top: 50,
-    right: 10, // Đặt gần góc phải
-    transform: [{ rotate: '90deg' }], // Xoay ngang 90 độ
+    right: 10,
+    transform: [{ rotate: '90deg' }],
   },
-  
-  
 });
 
 export default ExerciseItem;
