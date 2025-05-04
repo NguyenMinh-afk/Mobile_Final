@@ -1,37 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Modal, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PaymentScreen = () => {
   const [theme, setTheme] = useState('light');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null); // Trạng thái phương thức thanh toán được chọn
+  const [modalVisible, setModalVisible] = useState(false); // Trạng thái hiển thị modal
+  const [paymentInfo, setPaymentInfo] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    paypalEmail: '',
+    walletPhone: '',
+  }); // Thông tin thanh toán
+
   const navigation = useNavigation();
   const route = useRoute();
   const { selectedPlan } = route.params; // Nhận gói đã chọn từ SubscriptionScreen
+
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
       setTheme(savedTheme || 'light');
     };
-  
+
     loadTheme();
-  
-    // Listen for updates when navigating back or theme changes
+
     const unsubscribe = navigation.addListener('focus', loadTheme);
-  
-    return () => unsubscribe(); // Cleanup listener
+    return () => unsubscribe();
   }, [navigation]);
-  
+
   const planDetails = {
     monthly: { title: 'Gói hàng tháng', price: '$12.12/Tháng' },
     annually: { title: 'Gói hàng năm', price: '$124.12/Tháng' },
   };
 
-  const handlePayment = () => {
+  // Xử lý chọn phương thức thanh toán
+  const handleSelectPaymentMethod = (method) => {
+    setSelectedPaymentMethod(method);
+  };
+
+  // Xử lý khi nhấn "XÁC NHẬN THANH TOÁN"
+  const handleConfirmPayment = () => {
+    if (!selectedPaymentMethod) {
+      Alert.alert('Lỗi', 'Vui lòng chọn một phương thức thanh toán.');
+      return;
+    }
+    setModalVisible(true); // Hiển thị modal để nhập thông tin
+  };
+
+  // Xử lý xác nhận thông tin thanh toán trong modal
+  const handleSubmitPayment = () => {
+    // Giả lập kiểm tra thông tin thanh toán
+    if (selectedPaymentMethod === 'card' && (!paymentInfo.cardNumber || !paymentInfo.expiryDate || !paymentInfo.cvv)) {
+      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin thẻ.');
+      return;
+    }
+    if (selectedPaymentMethod === 'paypal' && !paymentInfo.paypalEmail) {
+      Alert.alert('Lỗi', 'Vui lòng nhập email PayPal.');
+      return;
+    }
+    if (selectedPaymentMethod === 'wallet' && !paymentInfo.walletPhone) {
+      Alert.alert('Lỗi', 'Vui lòng nhập số điện thoại ví điện tử.');
+      return;
+    }
+
     // Giả lập thanh toán thành công
-    alert('Thanh toán thành công!');
-    navigation.navigate('MenuMain'); // Quay lại màn hình chính sau khi thanh toán
+    Alert.alert('Thành công', 'Thanh toán thành công!');
+    setModalVisible(false);
+    navigation.navigate('MenuMain');
   };
 
   return (
@@ -52,29 +91,127 @@ const PaymentScreen = () => {
           <Text style={[styles.planSub, theme === 'dark' && styles.darkText]}>Thử miễn phí 1 tuần, hủy bất cứ lúc nào</Text>
         </View>
 
-
         {/* Payment Methods */}
         <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Phương thức thanh toán</Text>
-        <TouchableOpacity style={[styles.paymentMethod, theme === 'dark' && styles.darkPaymentMethod]}>
+        <TouchableOpacity
+          style={[
+            styles.paymentMethod,
+            theme === 'dark' && styles.darkPaymentMethod,
+            selectedPaymentMethod === 'card' && styles.selectedPaymentMethod,
+          ]}
+          onPress={() => handleSelectPaymentMethod('card')}
+        >
           <Ionicons name="card-outline" size={24} color={theme === 'dark' ? '#fff' : '#6A5AE0'} />
           <Text style={[styles.paymentText, theme === 'dark' && styles.darkText]}>Thẻ tín dụng/Thẻ ghi nợ</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.paymentMethod, theme === 'dark' && styles.darkPaymentMethod]}>
+        <TouchableOpacity
+          style={[
+            styles.paymentMethod,
+            theme === 'dark' && styles.darkPaymentMethod,
+            selectedPaymentMethod === 'paypal' && styles.selectedPaymentMethod,
+          ]}
+          onPress={() => handleSelectPaymentMethod('paypal')}
+        >
           <Ionicons name="logo-paypal" size={24} color={theme === 'dark' ? '#fff' : '#6A5AE0'} />
           <Text style={[styles.paymentText, theme === 'dark' && styles.darkText]}>PayPal</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.paymentMethod, theme === 'dark' && styles.darkPaymentMethod]}>
+        <TouchableOpacity
+          style={[
+            styles.paymentMethod,
+            theme === 'dark' && styles.darkPaymentMethod,
+            selectedPaymentMethod === 'wallet' && styles.selectedPaymentMethod,
+          ]}
+          onPress={() => handleSelectPaymentMethod('wallet')}
+        >
           <Ionicons name="wallet-outline" size={24} color={theme === 'dark' ? '#fff' : '#6A5AE0'} />
           <Text style={[styles.paymentText, theme === 'dark' && styles.darkText]}>Ví điện tử (Momo, ZaloPay)</Text>
         </TouchableOpacity>
 
-
         {/* Confirm Payment Button */}
-        <TouchableOpacity style={styles.confirmButton} onPress={handlePayment}>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmPayment}>
           <Text style={styles.confirmButtonText}>XÁC NHẬN THANH TOÁN</Text>
         </TouchableOpacity>
+
+        {/* Modal để nhập thông tin thanh toán */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, theme === 'dark' && styles.darkModalContent]}>
+              <Text style={[styles.modalTitle, theme === 'dark' && styles.darkText]}>Nhập thông tin thanh toán</Text>
+
+              {/* Form nhập thông tin dựa trên phương thức thanh toán */}
+              {selectedPaymentMethod === 'card' && (
+                <>
+                  <TextInput
+                    style={[styles.input, theme === 'dark' && styles.darkInput]}
+                    placeholder="Số thẻ (16 chữ số)"
+                    placeholderTextColor={theme === 'dark' ? '#888' : '#999'}
+                    value={paymentInfo.cardNumber}
+                    onChangeText={(text) => setPaymentInfo({ ...paymentInfo, cardNumber: text })}
+                    keyboardType="numeric"
+                    maxLength={16}
+                  />
+                  <TextInput
+                    style={[styles.input, theme === 'dark' && styles.darkInput]}
+                    placeholder="Ngày hết hạn (MM/YY)"
+                    placeholderTextColor={theme === 'dark' ? '#888' : '#999'}
+                    value={paymentInfo.expiryDate}
+                    onChangeText={(text) => setPaymentInfo({ ...paymentInfo, expiryDate: text })}
+                    keyboardType="numeric"
+                    maxLength={5}
+                  />
+                  <TextInput
+                    style={[styles.input, theme === 'dark' && styles.darkInput]}
+                    placeholder="CVV (3 chữ số)"
+                    placeholderTextColor={theme === 'dark' ? '#888' : '#999'}
+                    value={paymentInfo.cvv}
+                    onChangeText={(text) => setPaymentInfo({ ...paymentInfo, cvv: text })}
+                    keyboardType="numeric"
+                    maxLength={3}
+                  />
+                </>
+              )}
+
+              {selectedPaymentMethod === 'paypal' && (
+                <TextInput
+                  style={[styles.input, theme === 'dark' && styles.darkInput]}
+                  placeholder="Email PayPal"
+                  placeholderTextColor={theme === 'dark' ? '#888' : '#999'}
+                  value={paymentInfo.paypalEmail}
+                  onChangeText={(text) => setPaymentInfo({ ...paymentInfo, paypalEmail: text })}
+                  keyboardType="email-address"
+                />
+              )}
+
+              {selectedPaymentMethod === 'wallet' && (
+                <TextInput
+                  style={[styles.input, theme === 'dark' && styles.darkInput]}
+                  placeholder="Số điện thoại ví điện tử"
+                  placeholderTextColor={theme === 'dark' ? '#888' : '#999'}
+                  value={paymentInfo.walletPhone}
+                  onChangeText={(text) => setPaymentInfo({ ...paymentInfo, walletPhone: text })}
+                  keyboardType="phone-pad"
+                />
+              )}
+
+              {/* Nút xác nhận trong modal */}
+              <TouchableOpacity style={styles.modalConfirmButton} onPress={handleSubmitPayment}>
+                <Text style={styles.modalConfirmButtonText}>Xác nhận</Text>
+              </TouchableOpacity>
+
+              {/* Nút hủy trong modal */}
+              <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.modalCancelButtonText}>Hủy</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
@@ -158,6 +295,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  selectedPaymentMethod: {
+    backgroundColor: '#e0d7ff',
+  },
   paymentText: {
     marginLeft: 15,
     fontSize: 16,
@@ -198,7 +338,67 @@ const styles = StyleSheet.create({
   darkPaymentMethod: {
     backgroundColor: '#2a2a2a',
   },
-
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    fontSize: 16,
+    color: '#333',
+  },
+  modalConfirmButton: {
+    backgroundColor: '#6A5AE0',
+    paddingVertical: 15,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  modalConfirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalCancelButton: {
+    backgroundColor: '#ccc',
+    paddingVertical: 15,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  modalCancelButtonText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  darkModalContent: {
+    backgroundColor: '#2a2a2a',
+  },
+  darkInput: {
+    backgroundColor: '#333',
+    color: '#f4f3f4',
+  },
 });
 
 export default PaymentScreen;

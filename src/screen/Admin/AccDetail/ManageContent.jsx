@@ -7,7 +7,7 @@ const ManageContent = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LessonManagement')}>
         <Ionicons name="book" size={22} color="#FFFFFF" style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>Quản lý bài học</Text>
+        <Text style={styles.buttonText}>Quản lý khóa học</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DocumentManagement')}>
         <Ionicons name="document" size={22} color="#FFFFFF" style={styles.buttonIcon} />

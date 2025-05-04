@@ -11,13 +11,15 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const ReadingDetail = () => {
+const GrammarDetail = () => {
   const [theme, setTheme] = useState('light');
+  const [activeTab, setActiveTab] = useState('intro');
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); 
+      setTheme(savedTheme || 'light');
     };
 
     loadTheme();
@@ -31,23 +33,27 @@ const ReadingDetail = () => {
 
     return () => clearInterval(themeListener);
   }, [theme]);
-  const [activeTab, setActiveTab] = useState('intro');
-  const navigation = useNavigation();
 
   const lessons = [
-    { id: '1', title: 'Reading Lesson 1: Self-Discovery' },
-    { id: '2', title: 'Reading Lesson 2: Mindfulness in Words' },
-    { id: '3', title: 'Reading Lesson 3: The Power of Gratitude' },
-    { id: '4', title: 'Reading Lesson 4: Inner Growth' },
-    { id: '5', title: 'Reading Lesson 5: Positive Thinking' },
-    { id: '6', title: 'Reading Lesson 6: Embracing Change' },
+    { id: '1', title: 'Grammar Lesson 1: Self-Discovery' },
+    { id: '2', title: 'Grammar Lesson 2: Mindfulness in Words' },
+    { id: '3', title: 'Grammar Lesson 3: The Power of Gratitude' },
+    { id: '4', title: 'Grammar Lesson 4: Inner Growth' },
+    { id: '5', title: 'Grammar Lesson 5: Positive Thinking' },
+    { id: '6', title: 'Grammar Lesson 6: Embracing Change' },
   ];
+
+  // Xử lý khi bấm vào một bài học
+  const handleLessonPress = (lesson) => {
+    console.log('Đã bấm vào bài học:', lesson.title);
+    // Bạn có thể thêm logic khác ở đây (ví dụ: hiển thị thông báo, mở modal, v.v.)
+  };
 
   return (
     <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       <ImageBackground
         source={require('../../../assets/User/Grammar_bg.png')}
-        style={styles.headerImage} // No theme-based darkening
+        style={styles.headerImage}
       >
         <View style={styles.headerIcons}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -55,7 +61,6 @@ const ReadingDetail = () => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-
 
       {/* Tab selector */}
       <View style={[styles.tabWrapper, theme === 'dark' && styles.darkTabWrapper]}>
@@ -72,16 +77,16 @@ const ReadingDetail = () => {
             </TouchableOpacity>
           ))}
         </View>
-          
       </View>
 
       {/* Tab Content */}
       <View style={styles.content}>
         {activeTab === 'intro' && (
           <View>
-            <Text style={[styles.sectionTitle,theme === 'dark' && styles.darkText]}>Mô tả:</Text>
-            <Text style={[styles.descriptionText, theme === 'dark' && styles.darkText]}>  
-            Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, bạn không chỉ nắm vững các quy tắc ngữ pháp liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách chính xác, tự nhiên và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách xây dựng câu đúng ngữ pháp, khám phá những khía cạnh mới trong cách diễn đạt ý tưởng và ứng dụng ngữ pháp vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.</Text>
+            <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Mô tả:</Text>
+            <Text style={[styles.descriptionText, theme === 'dark' && styles.darkText]}>
+              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
+            </Text>
           </View>
         )}
 
@@ -90,9 +95,12 @@ const ReadingDetail = () => {
             data={lessons}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.lessonItem}>
-                <Text style={[styles.lessonText,theme === 'dark' && styles.darkText]}>{item.title}</Text>
-              </View>
+              <TouchableOpacity
+                style={[styles.lessonItem, theme === 'dark' && styles.darkLessonItem]}
+                onPress={() => handleLessonPress(item)}
+              >
+                <Text style={[styles.lessonText, theme === 'dark' && styles.darkText]}>{item.title}</Text>
+              </TouchableOpacity>
             )}
             ListFooterComponent={
               <TouchableOpacity style={styles.viewAll}>
@@ -104,7 +112,7 @@ const ReadingDetail = () => {
 
         {activeTab === 'post' && (
           <View style={styles.emptyPost}>
-            <Ionicons name="document-text-outline" size={24} color="#333" />
+            <Ionicons name="document-text-outline" size={24} color={theme === 'dark' ? '#f4f3f4' : '#333'} />
           </View>
         )}
       </View>
@@ -175,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-  description: {
+  descriptionText: {
     fontSize: 15,
     lineHeight: 22,
     color: '#333',
@@ -184,6 +192,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    marginBottom: 5,
+    paddingHorizontal: 10,
   },
   lessonText: {
     fontSize: 15,
@@ -237,7 +249,9 @@ const styles = StyleSheet.create({
   darkContainer: {
     backgroundColor: '#1c1c1c',
   },
-
+  darkTabWrapper: {
+    backgroundColor: '#1c1c1c',
+  },
   darkTabContainer: {
     backgroundColor: '#2a2a2a',
   },
@@ -257,7 +271,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#444',
     borderColor: '#fff',
   },
-
+  darkLessonItem: {
+    backgroundColor: '#2a2a2a',
+    borderBottomColor: '#444',
+  },
 });
 
-export default ReadingDetail;
+export default GrammarDetail;

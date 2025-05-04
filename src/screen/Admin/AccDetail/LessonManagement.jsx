@@ -7,9 +7,9 @@ const LessonManagement = () => {
   const isDarkMode = colorScheme === 'dark';
 
   const lessons = [
-    { id: '1', title: 'Bài học 1: Từ vựng cơ bản', updatedAt: '2025-05-04' },
-    { id: '2', title: 'Bài học 2: Ngữ pháp cơ bản', updatedAt: '2025-05-03' },
-    { id: '3', title: 'Bài học 3: Kỹ năng nghe', updatedAt: '2025-05-02' },
+    { id: '1', title: 'Khóa học 1: Từ vựng cơ bản', updatedAt: '2025-05-04' },
+    { id: '2', title: 'Khóa học 2: Ngữ pháp cơ bản', updatedAt: '2025-05-03' },
+    { id: '3', title: 'Khóa học 3: Kỹ năng nghe', updatedAt: '2025-05-02' },
   ];
 
   const renderLessonItem = ({ item }) => (
@@ -27,17 +27,17 @@ const LessonManagement = () => {
 
   return (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-      <Text style={[styles.title, isDarkMode && styles.darkTitle]}>Quản lý bài học</Text>
+      <Text style={[styles.title, isDarkMode && styles.darkTitle]}>Quản lý khóa học</Text>
       <TouchableOpacity style={[styles.addButton, isDarkMode && styles.darkAddButton]}>
         <Ionicons name="add" size={22} color="#FFFFFF" style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>Thêm bài học mới</Text>
+        <Text style={styles.buttonText}>Thêm khóa học mới</Text>
       </TouchableOpacity>
       <FlatList
         data={lessons}
         renderItem={renderLessonItem}
         keyExtractor={item => item.id}
         style={styles.list}
-        ListEmptyComponent={<Text style={[styles.emptyText, isDarkMode && styles.darkEmptyText]}>Không có bài học nào.</Text>}
+        ListEmptyComponent={<Text style={[styles.emptyText, isDarkMode && styles.darkEmptyText]}>Không có khóa học nào.</Text>}
       />
     </View>
   );

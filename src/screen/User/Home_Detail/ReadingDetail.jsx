@@ -13,11 +13,13 @@ import { useNavigation } from '@react-navigation/native';
 
 const ReadingDetail = () => {
   const [theme, setTheme] = useState('light');
+  const [activeTab, setActiveTab] = useState('intro');
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem('theme');
-      setTheme(savedTheme || 'light'); 
+      setTheme(savedTheme || 'light');
     };
 
     loadTheme();
@@ -31,8 +33,6 @@ const ReadingDetail = () => {
 
     return () => clearInterval(themeListener);
   }, [theme]);
-  const [activeTab, setActiveTab] = useState('intro');
-  const navigation = useNavigation();
 
   const lessons = [
     { id: '1', title: 'Reading Lesson 1: Self-Discovery' },
@@ -43,11 +43,17 @@ const ReadingDetail = () => {
     { id: '6', title: 'Reading Lesson 6: Embracing Change' },
   ];
 
+  // Xử lý khi bấm vào một bài học
+  const handleLessonPress = (lesson) => {
+    console.log('Đã bấm vào bài học:', lesson.title);
+    // Bạn có thể thêm logic khác ở đây (ví dụ: hiển thị thông báo, mở modal, v.v.)
+  };
+
   return (
     <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       <ImageBackground
         source={require('../../../assets/User/Reading_bg.png')}
-        style={styles.headerImage} // No theme-based darkening
+        style={styles.headerImage}
       >
         <View style={styles.headerIcons}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -55,7 +61,6 @@ const ReadingDetail = () => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-
 
       {/* Tab selector */}
       <View style={[styles.tabWrapper, theme === 'dark' && styles.darkTabWrapper]}>
@@ -72,16 +77,15 @@ const ReadingDetail = () => {
             </TouchableOpacity>
           ))}
         </View>
-          
       </View>
 
       {/* Tab Content */}
       <View style={styles.content}>
         {activeTab === 'intro' && (
           <View>
-            <Text style={[styles.sectionTitle,theme === 'dark' && styles.darkText]}>Mô tả:</Text>
-            <Text style={[styles.descriptionText, theme === 'dark' && styles.darkText]}>  
-            Hãy để từng trang sách tiếng Anh mở ra một hành trình tự khám phá và phát triển bản thân. Khi luyện tập đọc, bạn sẽ tiếp cận những câu chuyện về tư duy tích cực và sự chữa lành, giúp bạn không chỉ nâng cao khả năng đọc hiểu mà còn kết nối sâu sắc với cảm xúc của mình. Mỗi bài học là một cơ hội để bạn thực hành chánh niệm, hiểu thêm về bản thân và sử dụng tiếng Anh như một công cụ để khám phá những giá trị mới trong cuộc sống.
+            <Text style={[styles.sectionTitle, theme === 'dark' && styles.darkText]}>Mô tả:</Text>
+            <Text style={[styles.descriptionText, theme === 'dark' && styles.darkText]}>
+              Học từ vựng qua hành trình tự khám phá, chữa lành và phát triển bản thân. Thông qua việc thực hành chánh niệm, nuôi dưỡng lòng biết ơn và duy trì sự kết nối với nội tâm, bạn không chỉ làm giàu vốn từ vựng liên quan đến sự phát triển cá nhân mà còn rèn luyện khả năng sử dụng tiếng Anh một cách tự nhiên, hiệu quả và có chiều sâu. Qua mỗi bài học, bạn sẽ hiểu thêm về cách tư duy tích cực, khám phá những khía cạnh mới của bản thân và ứng dụng ngôn ngữ vào cuộc sống hàng ngày một cách linh hoạt. Đây không chỉ là quá trình học tập, mà còn là hành trình thay đổi tư duy, giúp bạn phát triển toàn diện hơn.
             </Text>
           </View>
         )}
@@ -91,9 +95,12 @@ const ReadingDetail = () => {
             data={lessons}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.lessonItem}>
-                <Text style={[styles.lessonText,theme === 'dark' && styles.darkText]}>{item.title}</Text>
-              </View>
+              <TouchableOpacity
+                style={[styles.lessonItem, theme === 'dark' && styles.darkLessonItem]}
+                onPress={() => handleLessonPress(item)}
+              >
+                <Text style={[styles.lessonText, theme === 'dark' && styles.darkText]}>{item.title}</Text>
+              </TouchableOpacity>
             )}
             ListFooterComponent={
               <TouchableOpacity style={styles.viewAll}>
@@ -105,7 +112,7 @@ const ReadingDetail = () => {
 
         {activeTab === 'post' && (
           <View style={styles.emptyPost}>
-            <Ionicons name="document-text-outline" size={24} color="#333" />
+            <Ionicons name="document-text-outline" size={24} color={theme === 'dark' ? '#f4f3f4' : '#333'} />
           </View>
         )}
       </View>
@@ -176,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-  description: {
+  descriptionText: {
     fontSize: 15,
     lineHeight: 22,
     color: '#333',
@@ -185,6 +192,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    marginBottom: 5,
+    paddingHorizontal: 10,
   },
   lessonText: {
     fontSize: 15,
@@ -238,7 +249,9 @@ const styles = StyleSheet.create({
   darkContainer: {
     backgroundColor: '#1c1c1c',
   },
-
+  darkTabWrapper: {
+    backgroundColor: '#1c1c1c',
+  },
   darkTabContainer: {
     backgroundColor: '#2a2a2a',
   },
@@ -258,7 +271,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#444',
     borderColor: '#fff',
   },
-
+  darkLessonItem: {
+    backgroundColor: '#2a2a2a',
+    borderBottomColor: '#444',
+  },
 });
 
 export default ReadingDetail;
