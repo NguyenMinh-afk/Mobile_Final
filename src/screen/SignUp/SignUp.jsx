@@ -97,9 +97,8 @@ const SignUp = ({ navigation }) => {
               />
             </TouchableOpacity>
             <Text style={styles.agreeTermsText}>
-              I agree to the{' '}
-              <Text style={styles.linkText} onPress={() => navigation.navigate('PP')}>Privacy Policy</Text> and{' '}
-              <Text style={styles.linkText} onPress={() => navigation.navigate('ToS')}>Terms of Service</Text>.
+              I agree to the <Text style={styles.linkText}>Privacy Policy</Text> and{' '}
+              <Text style={styles.linkText}>Terms of Service</Text>.
             </Text>
           </View>
 
