@@ -17,7 +17,7 @@ const Forgot2 = ({ navigation }) => {
 
   return (
     <ImageBackground 
-      source={require('../../assets/background.png')} 
+      source={require('../../../assets/background.png')} 
       style={styles.background} 
       imageStyle={styles.imageStyle}
     >

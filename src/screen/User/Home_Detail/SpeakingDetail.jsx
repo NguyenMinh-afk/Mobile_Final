@@ -52,7 +52,7 @@ const SpeakingDetail = () => {
   return (
     <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
       <ImageBackground
-        source={require('../../../assets/User/Speaking_bg.png')}
+        source={require('../../../../assets/User/Speaking_bg.png')}
         style={styles.headerImage}
       >
         <View style={styles.headerIcons}>

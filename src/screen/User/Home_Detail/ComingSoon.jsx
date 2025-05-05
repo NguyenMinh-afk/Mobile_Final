@@ -41,7 +41,7 @@ const ComingSoonDetail = () => {
 
       {/* Central Image */}
       <View style={styles.imageWrapper}>
-        <Image source={require('../../../assets/User/woah.gif')} style={styles.image} />
+        <Image source={require('../../../../assets/User/woah.gif')} style={styles.image} />
       </View>
 
       {/* Title & Description */}
