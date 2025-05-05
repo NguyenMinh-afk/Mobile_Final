@@ -19,10 +19,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.Bao.MQTLearn"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "owner": "baobonk",
+    "extra": {
+      "eas": {
+        "projectId": "3794d81e-584d-4a38-b199-0a1da694a73a"
+      }
     }
   }
 }
