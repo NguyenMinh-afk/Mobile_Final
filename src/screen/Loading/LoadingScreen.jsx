@@ -1,15 +1,44 @@
-import React, { useEffect } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, ImageBackground, Image } from 'react-native';
+import React, { useEffect, useContext, useState } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet, ImageBackground } from 'react-native';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const LoadingScreen = ({ navigation }) => {
-  useEffect(() => {
-    // Chờ 3 giây rồi chuyển sang màn hình Begin
-    const timer = setTimeout(() => {
-      navigation.replace('Begin');
-    }, 3000);
+  const { isLoggedIn, isLoading, user } = useContext(AuthContext);
+  const [isVisible, setIsVisible] = useState(true); // State để kiểm soát hiển thị
+  const minLoadingTime = 3000; // Thời gian hiển thị tối thiểu (3 giây)
 
-    return () => clearTimeout(timer); // Xóa timer khi component bị unmount
-  }, [navigation]);
+  useEffect(() => {
+    let timer;
+
+    // Đảm bảo hiển thị ít nhất 3 giây
+    timer = setTimeout(() => {
+      console.log('⏳ Hết thời gian 3 giây, kiểm tra trạng thái');
+      setIsVisible(false); // Ẩn loading sau 3 giây
+    }, minLoadingTime);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Chỉ điều hướng khi isVisible là false và isLoading là false
+    if (!isVisible && !isLoading) {
+      if (isLoggedIn) {
+        const role = user?.role || 'user';
+        console.log('⏳ Chuyển hướng đến LoginNavigator với role:', role);
+        navigation.replace('LoginNavigator', { role });
+      } else {
+        console.log('⏳ Chuyển hướng đến Begin');
+        navigation.replace('Begin');
+      }
+    }
+  }, [isVisible, isLoading, isLoggedIn, user, navigation]);
+
+  // Chỉ render LoadingScreen khi isVisible là true
+  if (!isVisible) {
+    return null; // Không render gì khi đã sẵn sàng chuyển hướng
+  }
 
   return (
     <ImageBackground
@@ -44,17 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
-  },
-  logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
   },
   loadingContainer: {
     position: 'absolute',
