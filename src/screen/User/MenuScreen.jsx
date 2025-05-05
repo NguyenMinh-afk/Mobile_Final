@@ -31,17 +31,14 @@ export default function MenuScreen() {
 
   const handleSignOut = async () => {
     try {
-      const response = await logout(); // Gọi API logout
-      if (response.success) {
-        await signOut(); // Xóa context/phiên người dùng
-        navigation.replace('SignIn'); // Điều hướng về SignIn
-      } else {
-        Alert.alert('Lỗi', response.message || 'Không thể đăng xuất.');
-      }
-    } catch (error) {
-      Alert.alert('Lỗi', error.message || 'Đã xảy ra lỗi khi đăng xuất.');
+      await AsyncStorage.removeItem('user');
+      await signOut(); // Xóa trạng thái trong context
+      navigation.replace('SignIn');
+    } catch (err) {
+      Alert.alert('Lỗi', 'Không thể đăng xuất');
     }
   };
+  
 
   const handlePress = (screen, isSignOut, label) => {
     if (isSignOut) {

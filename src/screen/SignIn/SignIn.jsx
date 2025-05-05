@@ -1,10 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, Alert } from 'react-native'; // Đã thêm Image
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground,
+  Image, Alert
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { AuthContext } from '../../contexts/AuthContext'; 
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
-import { validateSignIn } from "../../utils/Validation";
-import { checkLogin } from "../../utils/CheckAccount";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { AuthContext } from '../../contexts/AuthContext';
+import { validateSignIn } from '../../utils/Validation';
+import { checkLogin } from '../../utils/CheckAccount';
 
 const SignIn = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -12,40 +16,40 @@ const SignIn = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { setIsLoggedIn } = useContext(AuthContext); // Sử dụng context
+  const { setIsLoggedIn, setUser } = useContext(AuthContext);
 
   const handleSignIn = async () => {
     if (!username || !password) {
-      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.', [{ text: 'OK' }]);
+      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.');
       return;
     }
-  
+
     const error = validateSignIn(password);
     if (error) {
-      Alert.alert('Lỗi', error, [{ text: 'OK' }]);
+      Alert.alert('Lỗi', error);
       return;
     }
-  
+
     try {
       const response = await checkLogin(username, password);
       if (response.success) {
         const userData = { username, role: response.role };
-  
-        // Nếu muốn lưu session vào server, có thể thêm đoạn API ở đây
-        // await saveSession(userData); // nếu bạn có API lưu session
-  
+
+        if (rememberMe) {
+          await AsyncStorage.setItem('user', JSON.stringify(userData));
+        }
+
         setIsLoggedIn(true);
         setUser(userData);
-  
-        Alert.alert('Thành công', `Đăng nhập thành công! Vai trò: ${response.role}`, [{ text: 'OK' }]);
+
+        Alert.alert('Thành công', `Đăng nhập thành công! Vai trò: ${response.role}`);
         navigation.replace('LoginNavigator', { role: response.role });
       } else {
         Alert.alert('Lỗi', response.message || 'Thông tin đăng nhập không chính xác.');
       }
     } catch (err) {
       Alert.alert('Lỗi', err.message || 'Đã xảy ra lỗi khi đăng nhập.');
-    }  
-    navigation.replace('LoginNavigator', { role });
+    }
   };
 
   return (
@@ -101,174 +105,3 @@ const SignIn = ({ navigation }) => {
     </ImageBackground>
   );
 };
-
-// Component Button tái sử dụng
-const CustomButton = ({ title, onPress }) => (
-  <TouchableOpacity style={styles.signInButton} onPress={onPress}>
-    <Text style={styles.signInButtonText}>{title}</Text>
-  </TouchableOpacity>
-);
-
-// Component Divider tái sử dụng
-const Divider = () => (
-  <View style={styles.dividerContainer}>
-    <View style={styles.divider} />
-    <Text style={styles.dividerText}>or</Text>
-    <View style={styles.divider} />
-  </View>
-);
-
-// Component Social Login tái sử dụng
-const SocialLogin = () => (
-  <View style={styles.socialSignInContainer}>
-    <SocialButton image={require('../../../assets/google_logo.png')} text="Sign in with Google" />
-    <SocialButton image={require('../../../assets/apple_logo.png')} text="Sign in with Apple" />
-  </View>
-);
-
-// Component Social Button tái sử dụng
-const SocialButton = ({ image, text }) => (
-  <TouchableOpacity style={styles.socialSignInButton}>
-    <Image source={image} style={styles.socialLogo} />
-    <Text style={styles.socialSignInText}>{text}</Text>
-  </TouchableOpacity>
-);
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  frame: {
-    backgroundColor: 'rgba(236, 234, 234, 0.8)',
-    borderRadius: 20,
-    padding: 20,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  container: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  },
-  passwordInput: {
-    flex: 1,
-  },
-  eyeIcon: {
-    marginLeft: 10,
-  },
-  rememberForgotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 20,
-  },
-  rememberMeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkboxContainer: {
-    marginRight: 10,
-  },
-  rememberMeText: {
-    fontSize: 14,
-    color: '#000',
-  },
-  forgotPassword: {
-    color: '#007BFF',
-  },
-  signInButton: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#007BFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  signInButtonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-    width: '100%',
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ccc',
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    color: '#999',
-    fontSize: 14,
-  },
-  socialSignInContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 20,
-  },
-  socialSignInButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 25,
-    paddingVertical: 10,
-    width: '48%',
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-  },
-  socialLogo: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-  },
-  socialSignInText: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  signUpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 11,
-  },
-  normalText: {
-    color: '#000',
-  },
-  linkText: {
-    color: '#007BFF',
-    fontWeight: 'bold',
-  },
-});
-
-export default SignIn;
