@@ -8,7 +8,7 @@ import { AuthContext } from '../../contexts/AuthContext'; // Import AuthContext
 export default function MenuScreen() {
   const navigation = useNavigation();
   const { signOut } = useContext(AuthContext); // Lấy hàm signOut từ AuthContext
-  const [theme, setTheme] = useState(null);
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const loadTheme = async () => {
@@ -43,13 +43,6 @@ export default function MenuScreen() {
     }
   };
 
-  if (theme === null) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
 
   const menuOptions = [
     { icon: 'person-outline', label: 'Thông tin cá nhân', screen: 'PersonalInfo' },
