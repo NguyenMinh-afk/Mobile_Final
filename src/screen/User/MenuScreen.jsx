@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthContext } from '../context/AuthContext'; // cập nhật đúng đường dẫn
-import { logout } from '../services/api'; // Đường dẫn API logout
+import { AuthContext } from '../../contexts/AuthContext'; // cập nhật đúng đường dẫn
+
 
 export default function MenuScreen() {
   const navigation = useNavigation();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
@@ -14,7 +14,7 @@ const Begin = () => {
   const navigation = useNavigation(); // Hook điều hướng
 
   return (
-    <ImageBackground source={require('../../assets/background.png')} style={styles.background}>
+    <ImageBackground source={require('../../../assets/background.png')} style={styles.background}>
       <View style={styles.container}>
         <AuthButton title="Sign Up" onPress={() => navigation.navigate('SignUp')} style={styles.signUpButton} textStyle={styles.signUpText} />
         <AuthButton title="Sign In" onPress={() => navigation.navigate('SignIn')} style={styles.signInButton} textStyle={styles.signInText} />
