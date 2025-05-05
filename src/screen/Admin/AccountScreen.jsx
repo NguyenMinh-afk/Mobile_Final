@@ -1,58 +1,19 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { AuthContext } from '../../contexts/AuthContext'; // Import AuthContext
 
 export default function AccountScreen({ navigation }) {
-  const { signOut } = useContext(AuthContext); // Lấy hàm signOut từ AuthContext
-
-  const handleSignOut = async () => {
-    await signOut(); // Gọi hàm signOut từ AuthContext
-    navigation.replace('SignIn'); // Điều hướng về SignIn
-  };
-
-  const handleManageContent = () => {
-    navigation.navigate('ManageContent');
-  };
-
-  const handleSystemSettings = () => {
-    navigation.navigate('SystemSettings');
-  };
-
-  const handleActivityLogs = () => {
-    navigation.navigate('ActivityLogs');
+  const handleSignOut = () => {
+    // Xóa dữ liệu phiên người dùng tại đây nếu cần (ví dụ: AsyncStorage)
+    navigation.replace('SignIn'); // Điều hướng về màn hình SignIn
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.profileContainer}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/80' }}
-          style={styles.avatar}
-        />
-        <View style={styles.profileInfo}>
-          <Text style={styles.name}>Admin Nguyễn Văn A</Text>
-          <Text style={styles.email}>admin@example.com</Text>
-          <Text style={styles.role}>Vai trò: Quản trị viên</Text>
-        </View>
-      </View>
-
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton} onPress={handleManageContent}>
-          <Text style={styles.actionText}>Quản lý nội dung hệ thống</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={handleSystemSettings}>
-          <Text style={styles.actionText}>Cài đặt hệ thống</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={handleActivityLogs}>
-          <Text style={styles.actionText}>Xem nhật ký hoạt động</Text>
-        </TouchableOpacity>
-      </View>
-
+      <Text>Account Screen</Text>
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutText}>Đăng xuất</Text>
+        <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
-
       <StatusBar style="auto" />
     </View>
   );
@@ -61,77 +22,20 @@ export default function AccountScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  profileContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 15,
-  },
-  profileInfo: {
-    flex: 1,
-    paddingTop: 70,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  email: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 5,
-  },
-  role: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 5,
-  },
-  actionsContainer: {
-    marginBottom: 20,
-  },
-  actionButton: {
-    backgroundColor: '#F8FAFC',
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  actionText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1F2937',
-    textAlign: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   signOutButton: {
-    paddingVertical: 15,
+    marginTop: 20,
+    paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#1cb0f6',
-    borderRadius: 8,
-    alignItems: 'center',
+    backgroundColor: '#ff4d4d',
+    borderRadius: 5,
   },
   signOutText: {
-    color: '#FFFFFF',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
 });
