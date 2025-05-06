@@ -13,7 +13,7 @@ const LoadingScreen = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={require('../../../assets/loading.png')}
+      source={require('../../assets/loading.png')}
       style={styles.background}
       imageStyle={styles.imageStyle}
     >

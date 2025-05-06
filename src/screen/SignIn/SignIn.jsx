@@ -106,8 +106,8 @@ const Divider = () => (
 // Component Social Login tái sử dụng
 const SocialLogin = () => (
   <View style={styles.socialSignInContainer}>
-    <SocialButton image={require('../../../assets/google_logo.png')} text="Sign in with Google" />
-    <SocialButton image={require('../../../assets/apple_logo.png')} text="Sign in with Apple" />
+    <SocialButton image={require('../../assets/google_logo.png')} text="Sign in with Google" />
+    <SocialButton image={require('../../assets/apple_logo.png')} text="Sign in with Apple" />
   </View>
 );
 

@@ -54,7 +54,7 @@ const SignUp = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={require('../../../assets/background.png')}
+      source={require('../../assets/background.png')}
       style={styles.background}
       imageStyle={{ opacity: 0.7 }}
     >
