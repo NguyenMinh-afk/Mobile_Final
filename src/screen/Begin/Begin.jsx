@@ -2,14 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const { width, height } = Dimensions.get('window');
-
-const screens = [
-  { image: require('../../../assets/Begin/screen1.png'), title: "Confidence in your words", subtitle: "With conversation-based learning, you'll be talking from lesson one" },
-  { image: require('../../../assets/Begin/screen2.png'), title: "Take your time to learn", subtitle: "Develop a habit of learning and make it a part of your daily routine" },
-  { image: require('../../../assets/Begin/screen3.png'), title: "The lessons you need to learn", subtitle: "Using a variety of learning styles to learn and retain" }
-];
-
 const Begin = () => {
   const navigation = useNavigation(); // Hook điều hướng
 
