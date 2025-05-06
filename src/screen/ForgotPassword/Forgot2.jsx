@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { resetPassword } from '../../utils/CheckAccount';
 
-const Forgot2 = ({ navigation }) => {
+const Forgot2 = ({ navigation, route }) => {
+  const { email } = route.params;
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handlePasswordUpdate = () => {
-    if (password === confirmPassword) {
-      alert('Password updated successfully');
-      // Pop 3 màn hình: Forgot2, Forgot1, Forgot → quay về SignIn ban đầu
-      navigation.pop(1);
-    } else {
-      alert('Passwords do not match');
+  const handlePasswordUpdate = async () => {
+    if (!password || !confirmPassword) {
+      alert('Vui lòng nhập đầy đủ thông tin!');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert('Mật khẩu không khớp!');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await resetPassword(email, password);
+      if (result.success) {
+        alert(result.message);
+        navigation.navigate('Login');
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Có lỗi xảy ra');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,15 +59,19 @@ const Forgot2 = ({ navigation }) => {
           onChangeText={setConfirmPassword}
           placeholderTextColor="#aaa"
         />
-        <CustomButton title="Confirm" onPress={handlePasswordUpdate} />
+        <CustomButton 
+          title={loading ? "Đang cập nhật..." : "Confirm"} 
+          onPress={handlePasswordUpdate}
+          disabled={loading}
+        />
       </View>
     </ImageBackground>
   );
 };
 
 // Component nút bấm tái sử dụng
-const CustomButton = ({ title, onPress }) => (
-  <TouchableOpacity style={styles.continueButton} onPress={onPress}>
+const CustomButton = ({ title, onPress, disabled }) => (
+  <TouchableOpacity style={styles.continueButton} onPress={onPress} disabled={disabled}>
     <Text style={styles.continueButtonText}>{title}</Text>
   </TouchableOpacity>
 );

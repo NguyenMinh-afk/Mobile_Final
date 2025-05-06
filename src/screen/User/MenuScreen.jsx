@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../contexts/AuthContext'; // Import AuthContext
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 export default function MenuScreen() {
   const navigation = useNavigation();
@@ -54,128 +51,33 @@ export default function MenuScreen() {
   ];
 
   return (
-    <SafeAreaView style={[styles.safeArea, theme === 'dark' && styles.darkSafeArea]}>
-      <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
-        <View style={[styles.profileCard, theme === 'dark' && styles.darkProfileCard]}>
-          <Image source={{ uri: 'https://via.placeholder.com/60' }} style={styles.avatar} />
-          <View style={styles.profileInfo}>
-            <Text style={[styles.name, theme === 'dark' && styles.darkText]}>Nguyễn Đức Minh</Text>
-            <Text style={[styles.username, theme === 'dark' && styles.darkText]}>@minhnguyen</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Subscription')}>
-              <Text style={[styles.upgrade, theme === 'dark' && styles.darkText]}>🎁 Nâng cấp tài khoản</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity>
-            <Ionicons name="create-outline" size={20} color={theme === 'dark' ? '#f4f3f4' : '#000'} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.menuContainer}>
-          {menuOptions.map(({ icon, label, screen, isSignOut }, index) => (
-            <TouchableOpacity
-              key={label}
-              style={[
-                styles.menuItem,
-                theme === 'dark' && styles.darkMenuItem,
-                index < menuOptions.length - 1 && styles.menuItemWithBorder,
-                theme === 'dark' && index < menuOptions.length - 1 && styles.darkMenuItemWithBorder,
-              ]}
-              onPress={() => handlePress(screen, isSignOut, label)}
-            >
-              <Ionicons name={icon} size={22} color={theme === 'dark' ? '#f4f3f4' : '#000'} style={styles.menuIcon} />
-              <Text style={[styles.menuText, theme === 'dark' && styles.darkText]}>{label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text>Menu Screen</Text>
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
+      <StatusBar style="auto" />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#f2f0ed',
-  },
-  darkSafeArea: {
-    backgroundColor: '#1c1c1c',
-  },
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#ffffff',
-  },
-  darkContainer: {
-    backgroundColor: '#2a2a2a',
-  },
-  profileCard: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 16,
     alignItems: 'center',
-    marginBottom: 10,
-  },
-  darkProfileCard: {
-    backgroundColor: '#3a3a3a',
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 12,
-    marginRight: 16,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  name: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: '#333',
-  },
-  username: {
-    color: '#555',
-    marginBottom: 4,
-  },
-  upgrade: {
-    fontSize: 12,
-    color: '#000',
-    textDecorationLine: 'underline',
-  },
-  menuContainer: {
-    flexGrow: 1,
-    paddingVertical: 0,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 10,
-    paddingVertical: 30,
-    backgroundColor: '#f2f0ed',
-  },
-  darkMenuItem: {
-    backgroundColor: '#3a3a3a',
-  },
-  menuItemWithBorder: {
-    borderBottomWidth: 1,
-    borderColor: '#000',
-  },
-  darkMenuItemWithBorder: {
-    borderBottomColor: '#555',
-  },
-  menuIcon: {
-    marginRight: 16,
-    marginLeft: 8,
-  },
-  menuText: {
-    fontSize: 16,
-  },
-  darkText: {
-    color: '#f4f3f4',
-  },
-  loadingContainer: {
-    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  signOutButton: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#ff4d4d',
+    borderRadius: 5,
+  },
+  signOutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

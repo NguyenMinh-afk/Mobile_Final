@@ -1,21 +1,48 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { verifyOTP, sendOTP } from '../../utils/CheckAccount';
 
-const Forgot1 = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+const Forgot1 = ({ navigation, route }) => {
+  const { email } = route.params;
   const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleConfirmOtp = () => {
-    if (otp.trim() === '') {
-      alert('Please enter the OTP code.');
+  const handleConfirmOtp = async () => {
+    if (!otp) {
+      alert('Vui lòng nhập mã OTP!');
       return;
     }
-    alert(`OTP code confirmed: ${otp}`);
-    navigation.replace('Forgot2'); // Chuyển đến Forgot2.tsx sau khi xác nhận OTP
+
+    setLoading(true);
+    try {
+      const result = await verifyOTP(email, otp);
+      if (result.success) {
+        alert(result.message);
+        navigation.navigate('Forgot2', { email });
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Có lỗi xảy ra');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordReset = () => {
-    alert(`Password reset request sent for account: ${email}`);
+  const handleResendOtp = async () => {
+    setLoading(true);
+    try {
+      const result = await sendOTP(email);
+      if (result.success) {
+        alert(result.message);
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Có lỗi xảy ra');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,10 +64,14 @@ const Forgot1 = ({ navigation }) => {
           placeholderTextColor="#aaa"
         />
         <View style={styles.actionContainer}>
-          <TouchableOpacity onPress={handlePasswordReset}>
-            <Text style={styles.resendText}>Resend code</Text>
+          <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
+            <Text style={styles.resendText}>Gửi lại mã</Text>
           </TouchableOpacity>
-          <CustomButton title="Confirm" onPress={handleConfirmOtp} />
+          <CustomButton 
+            title={loading ? "Đang xử lý..." : "Confirm"} 
+            onPress={handleConfirmOtp}
+            disabled={loading}
+          />
         </View>
       </View>
     </ImageBackground>
@@ -48,8 +79,8 @@ const Forgot1 = ({ navigation }) => {
 };
 
 // Component nút bấm tái sử dụng
-const CustomButton = ({ title, onPress }) => (
-  <TouchableOpacity style={styles.continueButton} onPress={onPress}>
+const CustomButton = ({ title, onPress, disabled }) => (
+  <TouchableOpacity style={styles.continueButton} onPress={onPress} disabled={disabled}>
     <Text style={styles.continueButtonText}>{title}</Text>
   </TouchableOpacity>
 );

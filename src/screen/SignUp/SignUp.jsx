@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import PasswordInput from '../../components/PasswordInput'; // Import component mới
+import PasswordInput from '../../components/PasswordInput';
 import { validateSignUp } from "../../utils/Validation";
+import { sendOTP } from "../../utils/CheckAccount";
 
 const SignUp = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -11,33 +11,46 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Trạng thái chung cho cả hai ô mật khẩu
+  const [showPassword, setShowPassword] = useState(false);
+
+  const checkFields = () => username && email && password && confirmPassword && agreeTerms;
 
   const toggleShowPassword = () => {
-    setShowPassword(!showPassword); // Khi nhấn, cả hai ô mật khẩu sẽ cùng hiển thị hoặc ẩn
+    setShowPassword(!showPassword);
   };
 
-  const handleSignUp = () => {
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
-    console.log("Agree Terms:", agreeTerms);
-
+  const handleSignUp = async () => {
     if (!agreeTerms) {
-        alert("You must agree to the Privacy Policy and Terms of Service.");
-        return;
+      Alert.alert("Error", "You must agree to the Privacy Policy and Terms of Service.");
+      return;
     }
 
     const error = validateSignUp(username, email, password, confirmPassword);
     if (error) {
-        alert(error);
-        return;
+      Alert.alert("Error", error);
+      return;
     }
 
-    alert("🎉 Sign Up Successful! Welcome!");
-    navigation.replace('SignIn');
-};
+    try {
+      // Gửi OTP tới email của người dùng
+      const response = await sendOTP(email);
+
+      if (response.success) {
+        Alert.alert("Success", "OTP has been sent to your email!");
+        console.log("Navigating to VerifyOTP with:", { username, email, password }); // Thêm log
+        navigation.navigate('VerifyOTP', {
+          username: username,
+          email: email,
+          password: password,
+        });
+      } else {
+        Alert.alert("Error", response.message || "Could not send OTP.");
+      }
+    } catch (err) {
+      console.error("Error in handleSignUp:", err); // Log lỗi
+      Alert.alert("Error", err.message || "An error occurred while sending OTP.");
+    }
+  };
 
   return (
     <ImageBackground
@@ -60,7 +73,6 @@ const SignUp = ({ navigation }) => {
             value={email}
             onChangeText={setEmail}
           />
-          {/* Sử dụng component PasswordInput cho cả hai ô mật khẩu */}
           <PasswordInput
             placeholder="Password"
             value={password}
@@ -85,19 +97,18 @@ const SignUp = ({ navigation }) => {
               />
             </TouchableOpacity>
             <Text style={styles.agreeTermsText}>
-              I agree to the{' '}
-              <Text style={styles.linkText} onPress={() => navigation.navigate('PP')}>Privacy Policy</Text> and{' '}
-              <Text style={styles.linkText} onPress={() => navigation.navigate('ToS')}>Terms of Service</Text>.
+              I agree to the <Text style={styles.linkText}>Privacy Policy</Text> and{' '}
+              <Text style={styles.linkText}>Terms of Service</Text>.
             </Text>
           </View>
 
           <TouchableOpacity
-              style={[styles.signUpButton, { backgroundColor: agreeTerms ? '#007BFF' : '#ccc' }]}
-              onPress={handleSignUp}
-              disabled={!agreeTerms}
-            >
-              <Text style={styles.signUpButtonText}>Sign Up</Text>
-            </TouchableOpacity>
+            style={[styles.signUpButton, { backgroundColor: checkFields() ? '#007BFF' : '#ccc' }]}
+            onPress={handleSignUp}
+            disabled={!checkFields()}
+          >
+            <Text style={styles.signUpButtonText}>Sign Up</Text>
+          </TouchableOpacity>
 
           <View style={styles.logInContainer}>
             <Text style={styles.normalText}>

@@ -4,9 +4,7 @@ import AppNavigator from './src/routers/AppNavigator';
 import { AuthProvider, AuthContext } from './src/contexts/AuthContext';
 
 const AppContent = () => {
-  const { isLoading, isLoggedIn } = useContext(AuthContext);
-
-  console.log('AppContent - isLoading:', isLoading, 'isLoggedIn:', isLoggedIn);
+  const { isLoading } = useContext(AuthContext);
 
   if (isLoading) {
     return (

@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Text, StyleSheet } from 'react-native';
+import VerifyOTP from "../screen/OTPs/VerifyOTP";
 
 // Import các màn hình
 import LoadingScreen from '../screen/Loading/LoadingScreen';
@@ -12,8 +13,6 @@ import Forgot from '../screen/ForgotPassword/Forgot';
 import Forgot1 from '../screen/ForgotPassword/Forgot1';
 import Forgot2 from '../screen/ForgotPassword/Forgot2';
 import LoginNavigator from './LoginNavigator'; // LoginNavigator kiểm tra vai trò
-import PrivacyPolicy from '../screen/SignUp/PP';  // Bổ sung màn hình Privacy Policy
-import TermsOfService from '../screen/SignUp/ToS'; // Bổ sung màn hình Terms of Service
 
 const Stack = createStackNavigator();
 
@@ -39,6 +38,7 @@ const AppNavigator = () => (
         component={LoadingScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
 
       {/* Màn hình khởi đầu */}
       <Stack.Screen
@@ -83,20 +83,6 @@ const AppNavigator = () => (
         name="LoginNavigator"
         component={LoginNavigator}
         options={{ headerShown: false }}
-      />
-
-      {/* Màn hình Chính sách Quyền Riêng Tư */}
-      <Stack.Screen
-        name="PP"
-        component={PrivacyPolicy}
-        options={{ headerTitle: () => <HeaderTitle title="Privacy Policy" /> }}
-      />
-
-      {/* Màn hình Điều Khoản Dịch Vụ */}
-      <Stack.Screen
-        name="ToS"
-        component={TermsOfService}
-        options={{ headerTitle: () => <HeaderTitle title="Terms of Service" /> }}
       />
     </Stack.Navigator>
   </NavigationContainer>
