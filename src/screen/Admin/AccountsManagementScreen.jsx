@@ -7,11 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function AccountsManagementScreen() {
   // Dữ liệu tĩnh
   const [accounts, setAccounts] = useState([
-    { id: '1',avatar: require('../../assets/avatar.png'), name: 'User 1', posts: 10, rating: 4.5, status: 'active' },
-    { id: '2',avatar: require('../../assets/avatar.png'), name: 'User 2', posts: 5, rating: 3.8, status: 'banned' },
-    { id: '3',avatar: require('../../assets/avatar.png'), name: 'User 3', posts: 8, rating: 4.2, status: 'active' },
-    { id: '4',avatar: require('../../assets/avatar.png'), name: 'User 4', posts: 12, rating: 4.9, status: 'banned' },
-    { id: '5',avatar: require('../../assets/avatar.png'), name: 'User 5', posts: 7, rating: 4.0, status: 'active' },
+    { id: '1',avatar: require('../../../assets/avatar.png'), name: 'User 1', posts: 10, rating: 4.5, status: 'active' },
+    { id: '2',avatar: require('../../../assets/avatar.png'), name: 'User 2', posts: 5, rating: 3.8, status: 'banned' },
+    { id: '3',avatar: require('../../../assets/avatar.png'), name: 'User 3', posts: 8, rating: 4.2, status: 'active' },
+    { id: '4',avatar: require('../../../assets/avatar.png'), name: 'User 4', posts: 12, rating: 4.9, status: 'banned' },
+    { id: '5',avatar: require('../../../assets/avatar.png'), name: 'User 5', posts: 7, rating: 4.0, status: 'active' },
   ]);
 
   const [filter, setFilter] = useState('all'); // Lọc tài khoản: all, active, banned
